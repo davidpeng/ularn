@@ -1,0 +1,8 @@
+This is Ularn 1.6.3a ported to JavaScript and HTML. You can play it on desktop 
+and mobile browsers, and also install it on Firefox OS.
+
+I've kept the core of the game in C and compile it to JavaScript with 
+Emscripten. There're code modifications in quite a few places to get the C code 
+working well with the web interface.
+
+Anyway, you can go play the game at http://ularn.z10.us.

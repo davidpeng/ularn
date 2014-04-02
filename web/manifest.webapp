@@ -1,0 +1,15 @@
+{
+    "name": "Ularn",
+    "description": "A roguelike game based on the original Larn. Travel through dungeons collecting weapons, killing monsters, in order to find and sell the Eye of Larn to save your sick daughter before your time runs out.",
+    "launch_path": "/index.html",
+    "icons": {
+        "60": "/icon-60.png",
+        "128": "/icon-128.png"
+    },
+    "developer": {
+        "name": "David Peng",
+        "url": "http://z10.us"
+    },
+    "default_locale": "en",
+    "fullscreen": "true"
+}

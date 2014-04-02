@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+    <head>
+        <link href="bootstrap.css" rel="stylesheet"/>
+        <link href="style.css" rel="stylesheet"/>
+        <script src="jquery.js"></script>
+        <script src="bootstrap.js"></script>
+        <script src="ularn.js"></script>
+        <script src="front.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+        <title>Ularn</title>
+    </head>
+    <body>
+        <img id="graphics" src="ularn_gfx.png" style="display: none"/>
+        
+        <div id="topBar">
+            <div id="quickStatus">
+                <span>HP <span id="stat-hp"></span>/<span id="stat-hpMax"></span></span>
+                <span>Spells <span id="stat-spells"></span>/<span id="stat-spellMax"></span></span>
+                <span>Gold <span id="stat-gold"></span></span>
+                <span>LV <span id="stat-levelName"></span></span>
+            </div>
+            <button id="statusButton" class="btn btn-default btn-sm">Status</button>
+        </div>
+        
+        <div id="inputDirectionMessage">In which direction?</div>
+        
+        <div id="popup">
+            <div id="popupContent">
+                <div id="title">
+                    <h1>Ularn</h1>
+                    <button id="newGameButton" class="btn btn-default btn-block">New Game</button>
+                    <button id="continueGameButton" class="btn btn-default btn-block">Continue Game</button>
+                    <button id="settingsButton" class="btn btn-default btn-block">Settings</button>
+                    <button id="aboutButton" class="btn btn-default btn-block">About</button>
+                </div>
+                
+                <div id="about">
+                    <h1>Ularn</h1>
+                    Created by Phil Cordier &mdash; based on Larn by Noah Morgan<br/>
+                    Updated by Josh Brandt and David Richerby<br/>
+                    Rewrite and Windows32/X11/Amiga graphics conversion by Julian Olds<br/>
+                    JavaScript conversion by <a href="http://z10.us" target="_blank">David Peng</a>
+                    <button id="aboutBackButton" class="btn btn-default btn-block">Back</button>
+                </div>
+                
+                <div id="menu">
+                    <div class="popupHeader"></div>
+                    <div id="menuItems"></div>
+                </div>
+                
+                <div id="numberInput">
+                    <div class="popupHeader"></div>
+                    <form>
+                        <div class="input-group">
+                            <input class="form-control"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default">OK</button>
+                            </span>
+                        </div>
+                        <div class="inputError">Invalid number!</div>
+                    </form>
+                </div>
+                
+                <div id="status">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Class</th><td id="stat-class" colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <th>Level</th><td id="stat-level" class="text-right"></td>
+                            <th>Experience</th><td id="stat-experience" class="text-right"></td>
+                        </tr>
+                        <tr>
+                            <th>Armor Class</th><td id="stat-ac" class="text-right"></td>
+                            <th>Weapon Class</th><td id="stat-wClass" class="text-right"></td>
+                        </tr>
+                        <tr>
+                            <th>Strength</th><td id="stat-strength" class="text-right"></td>
+                            <th>Intelligence</th><td id="stat-intelligence" class="text-right"></td>
+                        </tr>
+                        <tr>
+                            <th>Wisdom</th><td id="stat-wisdom" class="text-right"></td>
+                            <th>Constitution</th><td id="stat-constitution" class="text-right"></td>
+                        </tr>
+                        <tr>
+                            <th>Dexterity</th><td id="stat-dexterity" class="text-right"></td>
+                            <th>Charisma</th><td id="stat-charisma" class="text-right"></td>
+                        </tr>
+                        <tr>
+                            <th>Effects</th><td id="stat-effects" colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">The stuff you are carrying presently weighs <span id="stat-packWeight"></span> lb.</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">You presently owe <span id="stat-outstandingTaxes"></span> gp in taxes.</td>
+                        </tr>
+                    </table>
+                    <button class="btn btn-default btn-block backButton">Back</button>
+                </div>
+                
+                <div id="settings">
+                    <label>
+                        Difficulty:
+                        <select id="difficultySelect">
+                            <option value="0">0 (normal)</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9 (really, really hard)</option>
+                        </select>
+                    </label>
+                    <label>
+                        <input id="showGridlinesCheckbox" type="checkbox" checked="checked"/>
+                        Show gridlines
+                    </label>
+                    <button id="settingsBackButton" class="btn btn-default btn-block">Back</button>
+                </div>
+                
+                <div id="score">
+                    <table class="table table-bordered">
+                        <tr><th>Score</th><td id="score-score"></td></tr>
+                        <tr><th>Difficulty</th><td id="score-diff"></td></tr>
+                        <tr><th>Level</th><td id="score-level"></td></tr>
+                        <tr><th>Class</th><td id="score-char"></td></tr>
+                        <tr><th>Fate</th><td id="score-diedReason"></td></tr>
+                    </table>
+                    <button id="startOverButton" class="btn btn-default btn-block">Start Over</button>
+                </div>
+            </div>
+        </div>
+        
+        <canvas class="noSelect"></canvas>
+        <div id="overlay" class="noSelect"></div>
+        
+        <div id="bottomBar">
+            <div id="messages"></div>
+            <button id="inventoryButton" class="btn btn-default btn-sm">Inventory</button>
+            <button id="castButton" class="btn btn-default btn-sm">Cast</button>
+            <div class="btn-group dropup">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">More <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a id="teleportOption" href="#">Teleport</a></li>
+                    <li><a id="identifyTrapsOption" href="#">Identify Traps</a></li>
+                    <li><a id="showDiscoveriesOption" href="#">Show Discoveries</a></li>
+                    <li><a id="saveGameOption" href="#">Save Game</a></li>
+                    <li><a id="settingsOption" href="#">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

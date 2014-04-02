@@ -1,0 +1,162 @@
+body {
+    background-color: black;
+    font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
+    overflow: hidden;
+    word-spacing: 0.1em;
+}
+
+canvas {
+    image-rendering: crisp-edges;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    -ms-interpolation-mode: nearest-neighbor;
+    position: absolute;
+}
+
+#overlay {
+    background-color: black;
+    height: 100%;
+    opacity: 0.5;
+    position: absolute;
+    width: 100%;
+    z-index: 200;
+}
+
+.noSelect {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+#topBar {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding-left: 3px;
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+}
+
+#quickStatus {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#quickStatus > span {
+    margin-right: 10px;
+}
+
+#statusButton {
+    float: right;
+}
+
+#inputDirectionMessage {
+    background-color: black;
+    color: white;
+    display: none;
+    font-weight: bold;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    z-index: 200;
+}
+
+#bottomBar {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 300;
+}
+
+#messages {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.contextAction {
+    margin-right: 4px;
+}
+
+.shortcutKey {
+    text-decoration: underline;
+}
+
+#popup {
+    background-color: white;
+    border-radius: 4px;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    width: 96%;
+    z-index: 400;
+}
+
+#popupContent {
+    overflow-y: auto;
+    padding: 6px 10px;
+}
+
+h1 {
+    font-family: inherit;
+    font-size: 72px;
+    font-weight: normal;
+    margin-top: 0;
+    text-align: center;
+    text-shadow: 0 0 1px #667;
+    text-transform: uppercase;
+}
+
+.popupHeader {
+    margin-bottom: 10px;
+}
+
+#popup button {
+    text-align: left;
+    padding-left: 1em;
+}
+
+#popup button small {
+    float: right;
+    margin-right: 1em;
+}
+
+.inputError {
+    color: red;
+    display: none;
+    margin-top: 10px;
+}
+
+#title button {
+    text-align: center;
+}
+
+#settings label {
+    display: block;
+    margin: 5px 5px 10px 5px;
+}
+
+#settingsBackButton {
+    margin-top: 20px;
+}
+
+#about {
+    text-align: center;
+}
+
+#aboutBackButton {
+    margin-top: 20px;
+    text-align: center !important;
+}
