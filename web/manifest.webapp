@@ -3,7 +3,10 @@
     "description": "A roguelike game based on the original Larn. Travel through dungeons collecting weapons, killing monsters, in order to find and sell the Eye of Larn to save your sick daughter before your time runs out.",
     "launch_path": "/index.html",
     "icons": {
+        "32": "/icon-32.png",
         "60": "/icon-60.png",
+        "90": "/icon-90.png",
+        "120": "/icon-120.png",
         "128": "/icon-128.png"
     },
     "developer": {
