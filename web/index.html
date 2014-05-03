@@ -5,6 +5,7 @@
         <link href="style.css" rel="stylesheet"/>
         <script src="jquery.js"></script>
         <script src="bootstrap.js"></script>
+        <script src="fastclick.js"></script>
         <script src="ularn.js"></script>
         <script src="front.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
@@ -13,6 +14,7 @@
     </head>
     <body>
         <img id="graphics" src="ularn_gfx.png" style="display: none"/>
+        <button style="display: none"></button>
         
         <div id="topBar">
             <div id="quickStatus">
@@ -141,7 +143,7 @@
         <div id="overlay" class="noSelect"></div>
         
         <div id="bottomBar">
-            <div id="messages"></div>
+            <div id="messages" class="noSelect"></div>
             <button id="inventoryButton" class="btn btn-default btn-sm">Inventory</button>
             <button id="castButton" class="btn btn-default btn-sm">Cast</button>
             <div class="btn-group dropup">
