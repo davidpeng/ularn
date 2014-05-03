@@ -464,6 +464,36 @@ char *get_status_json()
 	return json_buffer;
 }
 
+long get_stat_hp()
+{
+    return c[HP] >= 0 ? c[HP] : 0;
+}
+
+long get_stat_hp_max()
+{
+    return c[HPMAX];
+}
+
+long get_stat_spells()
+{
+    return c[SPELLS];
+}
+
+long get_stat_spell_max()
+{
+    return c[SPELLMAX];
+}
+
+long get_stat_gold()
+{
+    return c[GOLD];
+}
+
+char *get_stat_level_name()
+{
+    return c[TELEFLAG] ? "?" : levelname[level];
+}
+
 /* Effects strings */
 static struct bot_side_def
 {
@@ -612,28 +642,21 @@ void GetTile(int x, int y, int *TileId)
   }
 }
 
-char *get_map_json()
+int get_map_width()
 {
-	strcpy(json_buffer, "[");
+    return MAXX;
+}
 
-	int TileId;
-	for (int x = 0; x < MAXX; x++)
-	{
-		if (x > 0)
-			strcat(json_buffer, ",");
-		strcat(json_buffer, "[");
-		for (int y = 0; y < MAXY; y++)
-		{
-			if (y > 0)
-				strcat(json_buffer, ",");
-			GetTile(x, y, &TileId);
-			sprintf(json_buffer + strlen(json_buffer), "%d", TileId);
-		}
-		strcat(json_buffer, "]");
-	}
+int get_map_height()
+{
+    return MAXY;
+}
 
-	strcat(json_buffer, "]");
-	return json_buffer;
+int get_map_tile(int x, int y)
+{
+    int tileId;
+    GetTile(x, y, &tileId);
+    return tileId;
 }
 
 char *get_text_html()
