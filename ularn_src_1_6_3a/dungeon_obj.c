@@ -39,6 +39,7 @@
 #include "potion.h"
 #include "scores.h"
 #include "itm.h"
+#include "ularn_game.h"
 
 /* =============================================================================
  * Local functions
@@ -285,6 +286,7 @@ void oaltar(int ans)
     switch (ans)
     {
       case 'p':
+        set_callback("act_on_object");
 		add_option('m', "Give Money", "");
 		add_option('j', "Just Pray", "");
 		break;
@@ -420,6 +422,7 @@ void oaltar_m(long k)
         }
 
         UpdateStatus();
+        nomove = 1;
     }
 }
 
