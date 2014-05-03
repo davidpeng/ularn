@@ -17,6 +17,16 @@ TILE_HEIGHT = 32;
 TILES_PER_GRAPHICS_ROW = 16;
 AUTO_SAVE_INTERVAL = 100;
 
+MAP_WIDTH = _get_map_width();
+MAP_HEIGHT = _get_map_height();
+
+var $canvas = null;
+var $messages = null;
+var $overlay = null;
+var $popup = null;
+var $showGridlinesCheckbox = null;
+
+var canvas = null;
 var canvasContext = null;
 var graphics = null;
 var previousMap = null;
@@ -27,7 +37,18 @@ var mouseX = 0;
 var mouseY = 0;
 
 $(function () {
-    canvasContext = $('canvas')[0].getContext('2d');    
+    if (location.search.indexOf('ffos') == -1) {
+        FastClick.attach(document.body);
+    }
+    
+    $canvas = $('canvas');
+    $messages = $('#messages');
+    $overlay = $('#overlay');
+    $popup = $('#popup');
+    $showGridlinesCheckbox = $('#showGridlinesCheckbox');
+    
+    canvas = $canvas[0];
+    canvasContext = canvas.getContext('2d');    
     canvasContext.imageSmoothingEnabled = false;
     canvasContext.webkitImageSmoothingEnabled = false;
     canvasContext.mozImageSmoothingEnabled = false;
@@ -35,46 +56,37 @@ $(function () {
     graphics = $('#graphics')[0];
     $(window).resize();
     
-    $('canvas').on('touchstart', function (event) {
+    $('canvas, #messages').on('touchstart', function (event) {
         event.preventDefault();
-    
         if (runningMapEffect) {
             return;
         }
-        
-        mouseX = event.originalEvent.touches[0].pageX - this.offsetLeft;
-        mouseY = event.originalEvent.touches[0].pageY - this.offsetTop;
+        mouseX = event.originalEvent.touches[0].pageX;
+        mouseY = event.originalEvent.touches[0].pageY;
         handleMouseDown(300);
-    });
-    
-    $('canvas').mousedown(function (event) {
+    }).mousedown(function (event) {
         if (runningMapEffect) {
             return;
         }
-        
-        mouseX = event.offsetX;
-        mouseY = event.offsetY;
+        mouseX = event.pageX;
+        mouseY = event.pageY;
         handleMouseDown(300);
-    });
-    
-    $('canvas').on('touchmove', function (event) {
-        mouseX = event.originalEvent.touches[0].pageX - this.offsetLeft;
-        mouseY = event.originalEvent.touches[0].pageY - this.offsetTop;
-    });
-    
-    $('canvas').mousemove(function (event) {
-        mouseX = event.offsetX;
-        mouseY = event.offsetY;
+    }).on('touchmove', function (event) {
+        mouseX = event.originalEvent.touches[0].pageX;
+        mouseY = event.originalEvent.touches[0].pageY;
+    }).mousemove(function (event) {
+        mouseX = event.pageX;
+        mouseY = event.pageY;
     });
     
     $(document).on('touchend mouseup', clearMouseDownTimeoutId);
     
     $(document).keydown(function (event) {
-        if (runningMapEffect || $('#overlay').is(':visible')) {
+        if (runningMapEffect || $overlay.is(':visible')) {
             return;
         }
         
-        switch (event.keyCode) {
+        switch (event.which) {
             case 97:
                 handleAction(ACTION_MOVE_SOUTHWEST);
                 break;
@@ -112,12 +124,12 @@ $(function () {
     });
     
     $(document).keypress(function (event) {
-        if (runningMapEffect || $('#popup').is(':visible')) {
+        if (runningMapEffect || $popup.is(':visible')) {
             return;
         }
         
         $('.contextAction').each(function () {
-            if (String.fromCharCode($(this).data('code')) == String.fromCharCode(event.keyCode).toLowerCase()) {
+            if (String.fromCharCode($(this).data('code')) == String.fromCharCode(event.which).toLowerCase()) {
                 $(this).click();
             }
         });
@@ -150,6 +162,7 @@ $(function () {
     });
     
     $('#statusButton').click(function () {
+        refreshStatus();
         showPopup('status');
     });
     
@@ -159,24 +172,29 @@ $(function () {
         doAction(ACTION_CAST_SPELL);
     });
     
-    $('#teleportOption').click(function () {
+    $('#teleportOption').click(function (event) {
+        event.preventDefault();
         doAction(ACTION_TELEPORT);
     });
     
-    $('#identifyTrapsOption').click(function () {
+    $('#identifyTrapsOption').click(function (event) {
+        event.preventDefault();
         doAction(ACTION_IDENTIFY_TRAPS);
     });
     
-    $('#showDiscoveriesOption').click(function () {
+    $('#showDiscoveriesOption').click(function (event) {
+        event.preventDefault();
         doAction(ACTION_LIST_SPELLS);
         refreshAll();
     });
     
-    $('#saveGameOption').click(function () {
+    $('#saveGameOption').click(function (event) {
+        event.preventDefault();
         saveGame();
     });
     
-    $('#settingsOption').click(function () {
+    $('#settingsOption').click(function (event) {
+        event.preventDefault();
         showPopup('settings');
     });
     
@@ -184,13 +202,13 @@ $(function () {
         saveSettings();
     });
     
-    $('#showGridlinesCheckbox').change(function () {
+    $showGridlinesCheckbox.change(function () {
         saveSettings();
         refreshCanvas();
     });
     
     $('#settingsBackButton').click(function () {
-        if ($('canvas').is(':visible')) {
+        if ($canvas.is(':visible')) {
             hidePopup();
         } else {
             showPopup('title');
@@ -218,22 +236,13 @@ $(function () {
     });
     
     $('#startOverButton').click(function () {
-        $('#messages').empty();
+        $messages.empty();
         showTitle();
     });
-    
-    $('button').clickOnTouch();
     
     loadSettings();
     showTitle();
 });
-
-$.fn.clickOnTouch = function () {
-    return $(this).on('touchstart', function (event) {
-        event.preventDefault();
-        $(this).click();
-    });
-};
 
 $(window).resize(function () {
     var canvasWidth = $(this).width();
@@ -253,7 +262,6 @@ $(window).resize(function () {
                                  1;
     
     var canvasPixelRatio = devicePixelRatio / backingStorePixelRatio;
-    var canvas = $('canvas')[0];
     canvas.width = canvasWidth * canvasPixelRatio;
     canvas.height = canvasHeight * canvasPixelRatio;
     canvas.style.width = canvasWidth + 'px';
@@ -265,11 +273,10 @@ $(window).resize(function () {
 
 function refreshCanvas(map) {
     if (map == null) {
-        map = JSON.parse(Pointer_stringify(_get_map_json()));
+        map = getMap();
         previousMap = map;
     }
     
-    var canvas = $('canvas')[0];
     var xOffset = (canvas.width - TILE_WIDTH) / 2 - _get_player_x() * TILE_WIDTH;
     var yOffset = (canvas.height - TILE_HEIGHT) / 2 - _get_player_y() * TILE_HEIGHT;
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -286,6 +293,17 @@ function refreshCanvas(map) {
     drawGridlines();
 }
 
+function getMap() {
+    var map = new Array(MAP_WIDTH);
+    for (var x = 0; x < MAP_WIDTH; x++) {
+        map[x] = new Array(MAP_HEIGHT);
+        for (var y = 0; y < MAP_HEIGHT; y++) {
+            map[x][y] = _get_map_tile(x, y);
+        }
+    }
+    return map;
+}
+
 function drawTile(tileId, canvasX, canvasY) {
     var graphicsX = tileId % TILES_PER_GRAPHICS_ROW * TILE_WIDTH;
     var graphicsY = Math.floor(tileId / TILES_PER_GRAPHICS_ROW) * TILE_HEIGHT;
@@ -293,11 +311,10 @@ function drawTile(tileId, canvasX, canvasY) {
 }
 
 function drawGridlines() {
-    if (!$('#showGridlinesCheckbox').is(':checked')) {
+    if (!$showGridlinesCheckbox.is(':checked')) {
         return;
     }
     
-    var canvas = $('canvas')[0];
     var cellSize = canvas.width < canvas.height ? canvas.width / 3 : canvas.height / 3;
     canvasContext.strokeStyle = 'white';
     canvasContext.beginPath();
@@ -325,9 +342,9 @@ function refreshMessages() {
 }
 
 function showMessage(messageHtml) {
-    $('#messages > div:lt(' + Math.max($('#messages > div').length - 1, 0) + ')').remove();
-    $('#messages > div').css('opacity', 0.5);
-    $('#messages').append($('<div>').html(messageHtml));
+    $messages.children('div:lt(' + Math.max($messages.children('div').length - 1, 0) + ')').remove();
+    $messages.children('div').css('opacity', 0.5);
+    $messages.append($('<div>').html(messageHtml));
 }
 
 function runMapEffects(effects) {
@@ -346,7 +363,7 @@ function runMapEffects(effects) {
         }
         _showcell(playerX, playerY);
         refreshCanvas();
-        refreshStatus();
+        refreshQuickStatus();
         refreshOptions();
         refreshScore();
         return;
@@ -354,8 +371,7 @@ function runMapEffects(effects) {
     
     runningMapEffect = true;
     refreshCanvas(previousMap);
-    var map = JSON.parse(Pointer_stringify(_get_map_json()));
-    var canvas = $('canvas')[0];
+    var map = getMap();
     var xOffset = (canvas.width - TILE_WIDTH) / 2 - playerX * TILE_WIDTH;
     var yOffset = (canvas.height - TILE_HEIGHT) / 2 - playerY * TILE_HEIGHT;
     for (var i = 0; i < effects[0].length; i++) {
@@ -369,6 +385,15 @@ function runMapEffects(effects) {
     setTimeout(function () {
         runMapEffects(effects.slice(1));
     }, 75);
+}
+
+function refreshQuickStatus() {
+    $('#stat-hp').text(_get_stat_hp());
+    $('#stat-hpMax').text(_get_stat_hp_max());
+    $('#stat-spells').text(_get_stat_spells());
+    $('#stat-spellMax').text(_get_stat_spell_max());
+    $('#stat-gold').text(_get_stat_gold());
+    $('#stat-levelName').text(Pointer_stringify(_get_stat_level_name()));
 }
 
 function refreshStatus() {
@@ -436,8 +461,7 @@ function showContextActions(options) {
                 hideOverlay();
                 _act_on_object(parseInt($(this).data('code')));
                 refreshAll();
-            }).clickOnTouch()
-            .appendTo($('#bottomBar'));
+            }).appendTo($('#bottomBar'));
     }
 }
 
@@ -449,7 +473,7 @@ function showMenu(options, callback) {
         $('<button class="btn btn-default btn-block">')
             .data('code', option.code)
             .data('callback', callback)
-            .text(option.text)
+            .append($('<span>').text(option.text))
             .append($('<small>').text(option.subtext))
             .click(function () {
                 hidePopup();
@@ -457,8 +481,7 @@ function showMenu(options, callback) {
                 if (code != -1) {
                     runCallback($(this).data('callback'), code);
                 }
-            }).clickOnTouch()
-            .appendTo($('#menuItems'));
+            }).appendTo($('#menuItems'));
     }
     showPopup('menu');
 }
@@ -486,23 +509,23 @@ function showPopup(which) {
     showOverlay();
     $('#popupContent > div').hide();
     $('#' + which).show();
-    $('#popup').show();
+    $popup.show();
     $('#popupContent').scrollTop(0);
 }
 
 function hidePopup() {
-    $('#popup').hide();
+    $popup.hide();
     hideOverlay();
 }
 
 function showOverlay() {
-    $('#overlay').show();
+    $overlay.show();
     $('#bottomBar button').prop('disabled', true);
 }
 
 function hideOverlay() {
     $('#bottomBar button').prop('disabled', false);
-    $('#overlay').hide();
+    $overlay.hide();
 }
 
 function handleAction(action) {
@@ -550,10 +573,9 @@ function showInventory() {
                         }).appendTo($('#menuItems'));
                 }
                 $('<button class="btn btn-default btn-block">Back</button>').click(showInventory).appendTo($('#menuItems'));
-            }).clickOnTouch()
-            .appendTo($('#menuItems'));
+            }).appendTo($('#menuItems'));
     }
-    $('<button class="btn btn-default btn-block backButton">Back</button>').click(hidePopup).clickOnTouch().appendTo($('#menuItems'));
+    $('<button class="btn btn-default btn-block backButton">Back</button>').click(hidePopup).appendTo($('#menuItems'));
     showPopup('menu');
 }
 
@@ -580,7 +602,7 @@ function showGame() {
 function saveSettings() {
     localStorage['ularn.settings'] = JSON.stringify({
         difficulty: $('#difficultySelect').val(),
-        showGridlines: $('#showGridlinesCheckbox').prop('checked')
+        showGridlines: $showGridlinesCheckbox.prop('checked')
     });
 }
 
@@ -591,7 +613,7 @@ function loadSettings() {
     }
     settings = JSON.parse(settings);
     $('#difficultySelect').val(settings.difficulty);
-    $('#showGridlinesCheckbox').prop('checked', settings.showGridlines);
+    $showGridlinesCheckbox.prop('checked', settings.showGridlines);
 }
 
 function clearMouseDownTimeoutId() {
@@ -602,8 +624,11 @@ function clearMouseDownTimeoutId() {
 }
 
 function handleMouseDown(repeatDelay) {
-    var canvasWidth = $('canvas').width();
-    var canvasHeight = $('canvas').height();
+    if ($overlay.is(':visible')) {
+        return;
+    }
+    var canvasWidth = $canvas.width();
+    var canvasHeight = $canvas.height();
     var cellSize = canvasWidth < canvasHeight ? canvasWidth / 3 : canvasHeight / 3;
     var west = canvasWidth / 2 - cellSize / 2;
     var east = canvasWidth / 2 + cellSize / 2;
