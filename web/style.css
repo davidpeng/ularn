@@ -128,6 +128,10 @@ h1 {
     padding-left: 1em;
 }
 
+#popup button span {
+    float: left;
+}
+
 #popup button small {
     float: right;
     margin-right: 1em;
