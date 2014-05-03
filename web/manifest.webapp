@@ -1,7 +1,7 @@
 {
     "name": "Ularn",
     "description": "A roguelike game based on the original Larn. Travel through dungeons collecting weapons, killing monsters, in order to find and sell the Eye of Larn to save your sick daughter before your time runs out.",
-    "launch_path": "/index.html",
+    "launch_path": "/index.html?ffos",
     "icons": {
         "32": "/icon-32.png",
         "60": "/icon-60.png",
