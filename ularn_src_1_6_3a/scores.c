@@ -911,10 +911,6 @@ int makeboard(void)
     return(-1);
   }
 
-#ifdef UNIX
-  chmod(scorefile, 0666);
-#endif
-
   return(0);
 }
 
