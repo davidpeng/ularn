@@ -476,21 +476,15 @@ void lookforobject(void)
       break;
 
     case OTHRONE:
-      if (nearbymonst()) return;
-      Printf("There is %s here.", objectname[i]);
-	  add_option('p', "Pry Jewels", "");
-	  add_option('s', "Sit", "");
-      break;
-
     case OTHRONE2:
       if (nearbymonst()) return;
       Printf("There is %s here.", objectname[i]);
+	  add_option('p', "Pry Jewels", "");
 	  add_option('s', "Sit", "");
       break;
 
     case ODEADTHRONE:
       Printf("There is %s here.", objectname[i]);
-	  add_option('p', "Pry Jewels", "");
 	  add_option('s', "Sit", "");
       break;
 
@@ -789,6 +783,8 @@ void take_item(int ans)
 		forget();
 }
 
+extern void move_world(int check_for_object);
+
 void act_on_object(int ans)
 {
   int i, j;
@@ -817,6 +813,7 @@ void act_on_object(int ans)
 
     case OALTAR:
       oaltar(ans);
+      move_world(0);
       break;
 
     case OBOOK:
@@ -980,6 +977,8 @@ void act_on_object(int ans)
           lastpx = (char) dx;
           lastpy = (char) dy;
         }
+        
+        move_world(0);
       }
       break;
 

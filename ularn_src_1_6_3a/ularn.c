@@ -576,11 +576,26 @@ void action_teleport(int t)
     UpdateStatusAndEffects();
 }
 
-void move_world()
+void move_world(int check_for_object)
 {
   if (nomove || get_callback()[0] != 0)
     return;
     
+  if (check_for_object)
+  {
+    if (dropflag==0)
+    {
+      lookforobject(); /* see if there is an object here*/
+    }
+    else
+    {
+      dropflag=0;      /* don't show it just dropped an item */
+    }
+  
+    if (get_callback()[0] != 0)
+      return;
+  }
+
   /* regenerate hp and spells */
   regen();
 
@@ -592,15 +607,6 @@ void move_world()
       rmst = (char) (120-(level<<2));
       fillmonst(makemonst(level));
     }
-  }
-
-  if (dropflag==0)
-  {
-    lookforobject(); /* see if there is an object here*/
-  }
-  else
-  {
-    dropflag=0;      /* don't show it just dropped an item */
   }
 
   if (hitflag == 0)
@@ -627,6 +633,6 @@ int act(ActionType Action)
 {
   nomove = 0;
   parse(Action);
-  move_world();
+  move_world(1);
   return !nomove;
 }
