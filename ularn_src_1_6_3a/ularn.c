@@ -147,6 +147,7 @@ void ULarnSetup(char character_class)
   {
     /* make the character that will play */
     char_picked = character_class;
+    wizard = 0;
     makeplayer();
     /* make the dungeon */
     newcavelevel(0);
