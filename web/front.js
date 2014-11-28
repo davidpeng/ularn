@@ -2,10 +2,6 @@ ACTION_MOVE_WEST = 2;
 ACTION_MOVE_EAST = 4;
 ACTION_MOVE_SOUTH = 6;
 ACTION_MOVE_NORTH = 8;
-ACTION_MOVE_NORTHEAST = 10;
-ACTION_MOVE_NORTHWEST = 12;
-ACTION_MOVE_SOUTHEAST = 14;
-ACTION_MOVE_SOUTHWEST = 16;
 ACTION_WAIT = 18;
 ACTION_CAST_SPELL = 25;
 ACTION_LIST_SPELLS = 31;
@@ -16,6 +12,9 @@ TILE_WIDTH = 32;
 TILE_HEIGHT = 32;
 TILES_PER_GRAPHICS_ROW = 16;
 AUTO_SAVE_INTERVAL = 100;
+CENTER_CIRCLE_RADIUS = 24;
+NUMBER_OF_DIRECTIONS = 4;
+ANGLES_PER_DIRECTION = 360 / NUMBER_OF_DIRECTIONS;
 
 MAP_WIDTH = _get_map_width();
 MAP_HEIGHT = _get_map_height();
@@ -87,36 +86,20 @@ $(function () {
         }
         
         switch (event.which) {
-            case 97:
-                handleAction(ACTION_MOVE_SOUTHWEST);
-                break;
-            case 98:
             case 40:
                 handleAction(ACTION_MOVE_SOUTH);
                 break;
-            case 99:
-                handleAction(ACTION_MOVE_SOUTHEAST);
-                break;
-            case 100:
             case 37:
                 handleAction(ACTION_MOVE_WEST);
                 break;
-            case 101:
+            case 190:
                 handleAction(ACTION_WAIT);
                 break;
-            case 102:
             case 39:
                 handleAction(ACTION_MOVE_EAST);
                 break;
-            case 103:
-                handleAction(ACTION_MOVE_NORTHWEST);
-                break;
-            case 104:
             case 38:
                 handleAction(ACTION_MOVE_NORTH);
-                break;
-            case 105:
-                handleAction(ACTION_MOVE_NORTHEAST);
                 break;
             default:
                 return;
@@ -315,18 +298,25 @@ function drawGridlines() {
         return;
     }
     
-    var cellSize = canvas.width < canvas.height ? canvas.width / 3 : canvas.height / 3;
+    var centerX = canvas.width / 2;
+    var centerY = canvas.height / 2;
     canvasContext.strokeStyle = 'white';
+    
     canvasContext.beginPath();
-    canvasContext.moveTo(canvas.width / 2 - cellSize / 2, 0);
-    canvasContext.lineTo(canvas.width / 2 - cellSize / 2, canvas.height);
-    canvasContext.moveTo(canvas.width / 2 + cellSize / 2, 0);
-    canvasContext.lineTo(canvas.width / 2 + cellSize / 2, canvas.height);
-    canvasContext.moveTo(0, canvas.height / 2 - cellSize / 2);
-    canvasContext.lineTo(canvas.width, canvas.height / 2 - cellSize / 2);
-    canvasContext.moveTo(0, canvas.height / 2 + cellSize / 2);
-    canvasContext.lineTo(canvas.width, canvas.height / 2 + cellSize / 2);
+    canvasContext.arc(centerX, centerY, CENTER_CIRCLE_RADIUS, 0, 360);
     canvasContext.stroke();
+    
+    for (var i = 0; i < NUMBER_OF_DIRECTIONS; i++) {
+        var angle = i * ANGLES_PER_DIRECTION - ANGLES_PER_DIRECTION / 2;
+        canvasContext.beginPath();
+        var radians = angle * Math.PI / 180;
+        var x = Math.cos(radians);
+        var y = Math.sin(radians);
+        canvasContext.moveTo(centerX + CENTER_CIRCLE_RADIUS * x, centerY + CENTER_CIRCLE_RADIUS * y);
+        var outerRadius = Math.max(canvas.width, canvas.height);
+        canvasContext.lineTo(centerX + outerRadius * x, centerY + outerRadius * y);
+        canvasContext.stroke();
+    }
 }
 
 function refreshAll() {
@@ -627,36 +617,28 @@ function handleMouseDown(repeatDelay) {
     if ($overlay.is(':visible')) {
         return;
     }
-    var canvasWidth = $canvas.width();
-    var canvasHeight = $canvas.height();
-    var cellSize = canvasWidth < canvasHeight ? canvasWidth / 3 : canvasHeight / 3;
-    var west = canvasWidth / 2 - cellSize / 2;
-    var east = canvasWidth / 2 + cellSize / 2;
-    var north = canvasHeight / 2 - cellSize / 2;
-    var south = canvasHeight / 2 + cellSize / 2;
-    if (mouseX < west) {
-        if (mouseY < north) {
-            handleAction(ACTION_MOVE_NORTHWEST);
-        } else if (mouseY > south) {
-            handleAction(ACTION_MOVE_SOUTHWEST);
-        } else {
-            handleAction(ACTION_MOVE_WEST);
-        }
-    } else if (mouseX > east) {
-        if (mouseY < north) {
-            handleAction(ACTION_MOVE_NORTHEAST);
-        } else if (mouseY > south) {
-            handleAction(ACTION_MOVE_SOUTHEAST);
-        } else {
-            handleAction(ACTION_MOVE_EAST);
-        }
+    var x = mouseX - $canvas.width() / 2;
+    var y = mouseY - $canvas.height() / 2;
+    var distance = Math.sqrt(x * x + y * y);
+    if (distance <= CENTER_CIRCLE_RADIUS) {
+        handleAction(ACTION_WAIT);
     } else {
-        if (mouseY < north) {
-            handleAction(ACTION_MOVE_NORTH);
-        } else if (mouseY > south) {
-            handleAction(ACTION_MOVE_SOUTH);
-        } else {
-            handleAction(ACTION_WAIT);
+        var angle = Math.atan2(y, x) * 180 / Math.PI + 180;
+        var direction = Math.floor((angle - ANGLES_PER_DIRECTION / 2) /
+          ANGLES_PER_DIRECTION) % NUMBER_OF_DIRECTIONS;
+        switch (direction) {
+            case 0:
+                handleAction(ACTION_MOVE_NORTH);
+                break;
+            case 1:
+                handleAction(ACTION_MOVE_EAST);
+                break;
+            case 2:
+                handleAction(ACTION_MOVE_SOUTH);
+                break;
+            case 3:
+                handleAction(ACTION_MOVE_WEST);
+                break;
         }
     }
     clearMouseDownTimeoutId();
