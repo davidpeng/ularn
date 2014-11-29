@@ -130,30 +130,6 @@ typedef enum ActionType
 } ActionType;
 
 /* =============================================================================
- * FUNCTION: close_app
- *
- * DESCRIPTION:
- * Close the application, freeing all resources.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void close_app(void);
-
-/* =============================================================================
- * Status and effects display update functions
- */
-
-/* =============================================================================
- * Text routines (operates on message or text window)
- */
-
-/* =============================================================================
  * FUNCTION: beep
  *
  * DESCRIPTION:
@@ -346,35 +322,6 @@ void nap(int delay);
 /* =============================================================================
  * User name functions
  */
-
-/* =============================================================================
- * FUNCTION: GetUser
- *
- * DESCRIPTION:
- * This function gets the username and user id.
- * This should use operating system calls if available.
- * If not, ask the player for their name (I guess we'll just have to trust
- * them).
- *
- * PARAMETERS:
- *
- *   username : On input this should be set to the name specified in the
- *              ularn options file. If the OS doesn't provide a username
- *              then this should be used for the username.
- *              On exit this is set to the username to use for the game.
- *
- *   uid      : This is set to the user id of the user.
- *              Systems that do not support user ids must provide a mechanism
- *              for associating a number with each username.
- *              I suggest using a player id file to store the mappings
- *              between users and numbers, incrementing the uid for each new
- *              player.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void GetUser(char *username, int *uid);
 
 void set_input_type(char *type);
 void set_callback(char *function);
