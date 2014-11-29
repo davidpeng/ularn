@@ -23,6 +23,9 @@ emcc \
   ularn_ask.c \
   ularn_game.c \
   ularn_win.c \
+  -Wall \
+  -Wextra \
+  -pedantic-errors \
   -O2 \
   --memory-init-file 0 \
   --embed-file lib \
