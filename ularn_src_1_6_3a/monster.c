@@ -231,7 +231,6 @@ static void checkloss(int x)
   if (x > 0)
   {
     losehp(DIED_MONSTER, x);
-    UpdateStatus();
   }
 }
 
@@ -709,7 +708,6 @@ static int spattack(int x, int xx, int yy)
     Printf(p, lastmonst);
 
     recalc();
-    UpdateStatus();
   }
 
   return (need_show);
@@ -1659,7 +1657,6 @@ void hitmonster(int x, int y)
 
     /* Recalculate WC */
     recalc();
-    UpdateStatus();
   }
 
   if (flag)
@@ -1798,7 +1795,6 @@ int hitm(int x, int y, int amt, int SpellFlag)
     show1cell(x,y);
     showcell(playerx,playery);
     recalc();
-    UpdateStatus();
     hitp[x][y] = 0;
 
     return (hpoints);
@@ -1830,8 +1826,6 @@ void hitplayer (int x, int y)
 
   bias = (c[HARDGAME]) + 1;
   hitflag = hit2flag = hit3flag = 1;
-  yrepcount=0;
-
   ifblind(x,y);
 
   if (mster==LEMMING)
@@ -1937,7 +1931,6 @@ void hitplayer (int x, int y)
     if (dam > 0)
     {
       losehp(DIED_MONSTER, dam);
-      UpdateStatus();
     }
   }
 

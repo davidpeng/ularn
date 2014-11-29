@@ -159,9 +159,6 @@ void ULarnSetup(char character_class)
   /* set up the desired difficulty  */
   sethard(difficulty);
 
-  showplayer();
-
-  yrepcount = 0;
   hit2flag = 0;
 
   EM_ASM(
@@ -207,16 +204,13 @@ void parse (ActionType Action)
       return;
 
     case ACTION_WAIT:
-      if (yrepcount) viewflag=1;
       return;
 
     case ACTION_NONE:
-      yrepcount = 0;
       nomove = 1;
       return;
 
     case ACTION_CAST_SPELL:
-      yrepcount=0;
   	  j = 0;
 	  for (i = 0; i < SPELL_COUNT; i++)
 	  {
@@ -236,12 +230,10 @@ void parse (ActionType Action)
       return;
 
     case ACTION_OPEN_CHEST:
-      yrepcount=0;
       openchest();
       return;
 
     case ACTION_LIST_SPELLS:
-      yrepcount=0;
       seemagic(0);
       nomove=1;
       return;
@@ -258,7 +250,6 @@ void parse (ActionType Action)
       return;
 
     case ACTION_TELEPORT:
-      yrepcount=0;
       if (wizard)
       {
 		set_input_type("number");
@@ -276,8 +267,6 @@ void parse (ActionType Action)
 
     case ACTION_IDENTIFY_TRAPS:
       flag=0;
-      yrepcount=0;
-
       for (j=playery-1; j<playery+2; j++)
       {
         if (j < 0) j=0;
@@ -305,7 +294,6 @@ void parse (ActionType Action)
       return;
 
     case ACTION_DEBUG_MODE:
-      yrepcount=0;
       nomove=1;
       if (!wizard)
       {
@@ -391,19 +379,14 @@ void parse (ActionType Action)
       c[GOLD] += 250000;
 
       recalc();
-      UpdateStatus();
-      drawscreen();
       return;
 
     case ACTION_REMOVE_ARMOUR:
-      yrepcount=0;
-
       if (c[SHIELD] != -1)
       {
         c[SHIELD] = -1;
         Print("Your shield is off.");
         recalc();
-        UpdateStatus();
       }
       else
       {
@@ -412,7 +395,6 @@ void parse (ActionType Action)
           c[WEAR] = -1;
           Print("Your armor is off.");
           recalc();
-          UpdateStatus();
         }
         else
         {
@@ -439,8 +421,6 @@ void action_teleport(int t)
     playery = (char) rnd(MAXY-2);
     newcavelevel(t);
     positionplayer();
-    draws(0, MAXX, 0, MAXY);
-    UpdateStatusAndEffects();
 }
 
 void move_world(int check_for_object)

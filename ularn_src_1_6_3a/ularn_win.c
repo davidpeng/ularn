@@ -11,14 +11,6 @@
  * This is the Windows 32 window display and input module.
  *
  * =============================================================================
- * EXPORTED VARIABLES
- *
- * nonap         : Set to true if no time delays are to be used.
- * nosignal      : Set if ctrl-C is to be trapped to prevent exit.
- * enable_scroll : Probably superfluous
- * yrepcount     : Repeat count for input commands.
- *
- * =============================================================================
  * EXPORTED FUNCTIONS
  *
  * init_app               : Initialise the app
@@ -29,9 +21,6 @@
  * get_num_input          : Geta number
  * get_dir_input          : Get a direction
  * set_display            : Set the display mode
- * UpdateStatus           : Update the status display
- * UpdateEffects          : Update the effects display
- * UpdateStatusAndEffects : Update both status and effects display
  * ClearText              : Clear the text output area
  * UlarnBeep              : Make a beep
  * Cursor                 : Set the cursor location
@@ -71,103 +60,14 @@
 #include "show.h"
 #include "savegame.h"
 
-//
-// Defines for windows
-//
-#define WINDOW_CLASS_NAME "ULARN_WINCLASS"  // class name
-
-// Default size of the ularn window in characters
-#define WINDOW_WIDTH    80
-#define WINDOW_HEIGHT   25
-#define SEPARATOR_WIDTH   8
-#define SEPARATOR_HEIGHT  8
-#define BORDER_SIZE       8
-
-/* =============================================================================
- * Exported variables
- */
-
-int nonap = 0;
-int nosignal = 0;
-
-char enable_scroll = 0;
-
-int yrepcount = 0;
-
 /* =============================================================================
  * Local variables
  */
 
-#define M_NONE 0
-#define M_SHIFT 1
-#define M_CTRL  2
-#define M_ASCII 255
-
-#define MAX_KEY_BINDINGS 3
-
-struct KeyCodeType
-{
-  int VirtKey;
-  int ModKey;
-};
-
-#define NUM_DIRS 4
-static ActionType DirActions[NUM_DIRS] =
-{
-  ACTION_MOVE_WEST,
-  ACTION_MOVE_EAST,
-  ACTION_MOVE_SOUTH,
-  ACTION_MOVE_NORTH
-};
-
-//
-// Variables for windows
-//
-
-#define INITIAL_WIDTH 400
-#define INITIAL_HEIGHT 300
-
-static int use_palette = 0;
-static int peused[256];
-
-static int CaretActive = 0;
-
-static int TileWidth = 32;
-static int TileHeight = 32;
-static int CharHeight;
-static int CharWidth;
-static int LarnWindowLeft = 0;
-static int LarnWindowTop  = 0;
-static int LarnWindowWidth = INITIAL_WIDTH;
-static int LarnWindowHeight = INITIAL_HEIGHT;
-static int LarnWindowMaximized = 0;
-static int MinWindowWidth;
-static int MinWindowHeight;
-
-static int Runkey;
-static ActionType Event;
-static int GotChar;
-static char EventChar;
 static int beep;
 static char json_buffer[8000];
 static char map_effect_json[8000] = "";
 
-//
-// player id file
-//
-static char *PIDName = LIBDIR "\\ularn.pid";
-#define FIRST_PID 1001
-
-//
-// ularn.ini file for window position & font selection
-//
-static char *IniName = "ularn.ini";
-
-//
-// Bitmaps for tiles
-//
-
-static char *TileBMName = LIBDIR "\\ularn_gfx.bmp";
 
 /* Tiles for different character classes, (female, male) */
 static int PlayerTiles[8][2] =
@@ -328,42 +228,6 @@ static struct MagicEffectDataType magicfx_tile[MAGIC_COUNT] =
   }
 };
 
-//
-// Map window position and size
-//
-static int MapLeft;
-static int MapTop;
-static int MapWidth;
-static int MapHeight;
-
-static int MapTileLeft = 0;
-static int MapTileTop  = 0;
-static int MapTileWidth;
-static int MapTileHeight;
-
-//
-// Status lines window position and size
-//
-static int StatusLeft;
-static int StatusTop;
-static int StatusWidth;
-static int StatusHeight;
-
-//
-// Effects window position and size
-//
-static int EffectsLeft;
-static int EffectsTop;
-static int EffectsWidth;
-static int EffectsHeight;
-
-//
-// Message window position and size
-//
-static int MessageLeft;
-static int MessageTop;
-static int MessageWidth;
-static int MessageHeight;
 
 //
 // Messages
@@ -382,10 +246,6 @@ static MonsterIdType mimicmonst = MIMIC;
 /*
  * Repaint flag to force redraw of everything, not just deltas
  */
-static int Repaint = 0;
-
-static int status_updated = 0;
-static int effects_updated = 0;
 
 char *get_status_json()
 {
@@ -402,7 +262,6 @@ char *get_status_json()
 	for (int i = 0; i < 100; i++)
 		cbak[i] = c[i];
 
-	status_updated = 0;
 	return json_buffer;
 }
 
@@ -477,7 +336,6 @@ char *get_effects_json()
 		strcat(json_buffer, "\"");
 	}
 
-	effects_updated = 0;
 	strcat(json_buffer, "]");
 	return json_buffer;
 }
@@ -612,30 +470,6 @@ char *get_text_html()
  * Exported functions
  */
 
-/* =============================================================================
- * FUNCTION: UpdateStatus
- */
-void UpdateStatus(void)
-{
-	status_updated = 1;
-}
-
-/* =============================================================================
- * FUNCTION: UpdateEffects
- */
-void UpdateEffects(void)
-{
-	effects_updated = 1;
-}
-
-/* =============================================================================
- * FUNCTION: UpdateStatusAndEffects
- */
-void UpdateStatusAndEffects(void)
-{
-	status_updated = 1;
-	effects_updated = 1;
-}
 
 /* =============================================================================
  * FUNCTION: UlarnBeep
@@ -721,13 +555,6 @@ void show1cell(int x, int y)
 }
 
 /* =============================================================================
- * FUNCTION: showplayer
- */
-void showplayer(void)
-{
-}
-
-/* =============================================================================
  * FUNCTION: showcell
  */
 void showcell(int x, int y)
@@ -800,20 +627,6 @@ void showcell(int x, int y)
 
     }
   }
-}
-
-/* =============================================================================
- * FUNCTION: drawscreen
- */
-void drawscreen(void)
-{
-}
-
-/* =============================================================================
- * FUNCTION: draws
- */
-void draws(int minx, int miny, int maxx, int maxy)
-{
 }
 
 /* =============================================================================
@@ -903,8 +716,6 @@ void nap(int delay)
 //
 //
 //
-
-static char *UserName;
 
 static char input_type[20] = "";
 static char callback[20] = "";

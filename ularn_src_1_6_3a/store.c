@@ -440,8 +440,6 @@ void add_dndstore_options()
 void dndstore()
 {
   dnditm = 0;
-  nosignal = 1; /* disable signals */
-
   dnd_2hed();
   if (outstanding_taxes>0)
   {
@@ -449,8 +447,6 @@ void dndstore()
     UlarnBeep();
     Printf("They have also told us that you owe %d gp in back taxes and, as we must ",(long)outstanding_taxes);
     Print("comply with the law, we cannot serve you at this time.  So Sorry. ");
-
-    nosignal = 0; /* enable signals */
     return;
   }
 
@@ -611,8 +607,6 @@ void add_school_options()
 
 void oschool()
 {
-  nosignal = 1; /* disable signals */
-
   sch_hed();
 
   set_callback("take_course");
@@ -841,8 +835,6 @@ static void appraise()
   printf_header("I see you have %s.", objectname[OLARNEYE]);
   print_header("I must commend you.  I didn't think you could get it.");
   print_header("Shall I appraise it for you? ");
-  yrepcount=0;
-
   set_callback("appraise2");
   add_option('y', "Yes", "");
   add_option('n', "No", "");
@@ -861,8 +853,6 @@ void appraise2(int ans)
 		printf_header("This is an excellent stone.");
 		printf_header("It is worth %d gold pieces to us.",(long)amt);
 		print_header("Would you like to sell it? ");
-		yrepcount=0;
-
 		set_callback("appraise3");
 		add_option('y', "Yes", "");
 		add_option('n', "No", "");
@@ -958,8 +948,6 @@ static void obanksub()
     appraise();
     return;
   }
-
-  yrepcount=0;
   obanksub2();
 }
 
@@ -1108,8 +1096,6 @@ void sell_gem(int arg)
  */
 static void banktitle(char *str)
 {
-  nosignal = 1; /* disable signals */
-
   print_header(str);
   if (outstanding_taxes > 0)
   {
@@ -1118,16 +1104,10 @@ static void banktitle(char *str)
     Printf("levied taxes have been paid.  They have also told us that you owe %d gp in ",(long)outstanding_taxes);
     Print("taxes and we must comply with them. We cannot serve you at this time.  Sorry. ");
     Print("We suggest you go to the LRS office and pay your taxes.");
-
-    nosignal = 0; /* enable signals */
-
     return;
   }
 
   obanksub();
-
-  nosignal = 0; /* enable signals */
-
 }
 
 /* =============================================================================
@@ -1358,8 +1338,6 @@ void otradepost()
   int idx;           /* inventory index of the item to sell            */
   int it, itarg;     /* item number and argument of the item to sell   */
   long value;        /* value of the item in gold                      */
-
-  yrepcount = 0;
   dnditm = 0;
   otradhead();
 
@@ -1461,16 +1439,11 @@ static void add_lrs_options()
  
 void olrs()
 {
-  nosignal = 1; /* disable signals */
-
   if (outstanding_taxes)
   {
     if (cheat)
     {
       Print("Sorry but it seems you are trying to pay off your taxes by cheating!");
-
-      nosignal = 0; /* enable signals */
-
       return;
 
     }
@@ -1486,9 +1459,6 @@ void olrs()
   {
     print_header("You do not owe us any taxes.           ");
   }
-    
-  yrepcount=0;
-
   set_callback("olrs2");
   add_lrs_options();
 }
@@ -1734,8 +1704,6 @@ void add_pad_options()
 
 void opad()
 {
-  nosignal = 1; /* disable signals */
-
   pad_hd();
 
   set_callback("buy_dope");
@@ -1798,8 +1766,6 @@ void buy_dope(int i)
 void ohome(void)
 {
   int i;
-
-  nosignal = 1; /* disable signals */
   set_callback("ohome2");
   for (i=0; i<IVENSIZE; i++)
     /* remove the potion of cure dianthroritis from inventory */
@@ -1876,7 +1842,6 @@ void ohome(void)
        "in the ");
   print_header("depths of the caves can this potion be found. ");
   add_option(-1, "Leave", "");
-  nosignal = 0; /* enable signals */
 }
 
 void ohome2(int died_reason)

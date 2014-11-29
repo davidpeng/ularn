@@ -387,8 +387,6 @@ static void pick_char(int foo)
   int i;
   int j;
 
-  nosignal = 1; /* disable signals */
-
   //
   // Character selected in ops
   //
@@ -439,8 +437,6 @@ static void pick_char(int foo)
 
   c[WEAR]  = InitialClassData[i].WearItem;
   c[WIELD] = InitialClassData[i].WieldItem;
-
-  nosignal = 0;
 
 } /* end pick_char */
 
@@ -603,7 +599,6 @@ int moveplayer(int dir)
   if ((k < 0) || (k >= MAXX) || (m < 0) || (m >= MAXY))
   {
     nomove = 1;
-    yrepcount = 0;
     return(0);
   }
 
@@ -614,7 +609,6 @@ int moveplayer(int dir)
   if ((i==OWALL) && (c[WTW]==0))
   {
     nomove = 1;
-    yrepcount = 0;
     return(0);
   }
 
@@ -622,7 +616,6 @@ int moveplayer(int dir)
   if ((enhance_interface) && (i==OCLOSEDDOOR))
   {
   	nomove = 1;
-    yrepcount = 0;
     return(0);
   }
 
@@ -643,7 +636,6 @@ int moveplayer(int dir)
           playerx = (char) k;
           playery = (char) m;
           positionplayer();
-          drawscreen();
           return(0);
         }
       }
@@ -654,7 +646,6 @@ int moveplayer(int dir)
   if (j>0)
   {
     hitmonster(k, m);
-    yrepcount = 0;
     return (0);
   } /* hit a monster*/
 
@@ -669,7 +660,6 @@ int moveplayer(int dir)
       (i != OIVDARTRAP) &&
       (i != OIVTRAPDOOR))
   {
-    yrepcount = 0;
     return(0);
   }
   else
@@ -778,8 +768,6 @@ void raiseexperience (long x)
         break;
     }
   }
-
-  UpdateStatusAndEffects();
 }
 
 /* =============================================================================
@@ -808,7 +796,6 @@ void loseexperience (long x)
   }
 
   recalc();
-  UpdateStatus();
 }
 
 /* =============================================================================
@@ -1229,14 +1216,12 @@ int take (int itm, int arg)
     if (need_recalc)
     {
       recalc();
-      UpdateStatus();
     }
 
     if ((c[BLINDCOUNT] == 0) && eyeflag)
     {
       Print("Your sight fades for a moment...");
       nap(2000);
-      drawscreen();
       Print("Your sight returns, and everything looks crystal-clear!");
     }
     return(0);
@@ -1299,8 +1284,6 @@ int drop_object (int k)
 
   adjustcvalues(itm, ivenarg[k]);
   recalc();
-  UpdateStatus();
-
   if (pitflag)
   {
     Printf("It disappears down the pit.");
@@ -1332,7 +1315,6 @@ void adjustivenarg(int Idx, int Amount)
     case OSHIELD:
     case OELVENCHAIN:
     	recalc();
-      UpdateStatus();
       break;
 
     /* Weapons */
@@ -1350,7 +1332,6 @@ void adjustivenarg(int Idx, int Amount)
     case OSLAYER:
     case OBELT:
       recalc();
-      UpdateStatus();
       break;
 
     /* Rings */
@@ -1365,7 +1346,6 @@ void adjustivenarg(int Idx, int Amount)
 
     case OPROTRING:
     	recalc();
-      UpdateStatus();
       break;
 
     case OENERGYRING:
@@ -1375,24 +1355,20 @@ void adjustivenarg(int Idx, int Amount)
     case ODEXRING:
     	c[DEXTERITY] += Amount;
       recalc();
-      UpdateStatus();
       break;
 
     case OSTRRING:
       c[STREXTRA] += Amount;
       recalc();
-      UpdateStatus();
       break;
 
     case OCLEVERRING:
       c[INTELLIGENCE] += Amount;
       recalc();
-      UpdateStatus();
       break;
 
     case ODAMRING:
       recalc();
-      UpdateStatus();
       break;
 
     default:
@@ -1460,8 +1436,6 @@ void enchantarmor (int how)
     /* Increase enchantment level by 1 */
     adjustivenarg(c[which], 1);
   }
-
-  UpdateStatus();
 }
 
 /* =============================================================================
@@ -1513,7 +1487,6 @@ void enchweapon (int how)
     }
 
   }
-  UpdateStatus();
 }
 
 /* =============================================================================
@@ -1717,7 +1690,6 @@ void adjustcvalues (int itm, int arg)
       {
         Print("Your sight fades for a moment...");
         nap(2000);
-        drawscreen();
         Print("Your sight returns but everything looks dull and faded.");
       }
       break;
@@ -1741,7 +1713,6 @@ void adjustcvalues (int itm, int arg)
   if (flag)
   {
     recalc();
-    UpdateStatusAndEffects();
   }
 
 }
@@ -1852,7 +1823,6 @@ void regen(void)
     if(--c[TIMESTOP] <= 0)
     {
       recalc();
-      UpdateStatusAndEffects();
     }
     return;
   }
@@ -2083,15 +2053,12 @@ void regen(void)
 
   if (flag == 1)
   {
-    UpdateStatus();
   }
   else if (flag == 2)
   {
-    UpdateEffects();
   }
   else if (flag == 3)
   {
-    UpdateStatusAndEffects();
   }
 }
 

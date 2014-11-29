@@ -142,9 +142,6 @@ static void fcheat(void)
 MemoryFile *savegame()
 {
   MemoryFile *fp;
-
-  nosignal = 1;
-
   /* Save the current level to storage */
   savelevel();
 
@@ -166,9 +163,6 @@ MemoryFile *savegame()
 
   /* file sum */
   bwrite(fp, (char *) &FileSum, sizeof(FileSum));
-
-  nosignal = 0;
-
   return fp;
 }
 

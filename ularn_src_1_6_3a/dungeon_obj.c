@@ -66,7 +66,6 @@ static void ohear(void)
     c[MOREDEFENSES] += ALTAR_PRO_BOOST;
   c[ALTPRO] += 800; /* protection field */
   recalc();
-  UpdateEffects();
 }
 
 /* =============================================================================
@@ -106,7 +105,6 @@ static void fch(int how, long *x)
     Print(" went up by one!");
     (*x)++;
   }
-  UpdateStatus();
 }
 
 /* =============================================================================
@@ -167,7 +165,6 @@ static void fntchange(int how)
         Printf("You gain %d hit point%s!",(long)j, plural(j));
         raisemhp((int)j);
       }
-      UpdateStatus();
       break;
     case 8:
       j = rnd(level+1);
@@ -181,7 +178,6 @@ static void fntchange(int how)
         Printf("You just lost %d spell%s!",(long)j, plural(j));
         losemspells((int)j);
       }
-      UpdateStatus();
       break;
     case 9:
       j = 5*rnd((level+1)*(level+1));
@@ -253,13 +249,11 @@ void oopendoor(int x, int y)
         Print("You are jolted by an electric shock!");
 
         losehp(DIED_ELECTRIC_SHOCK, rnd(20));
-        UpdateStatus();
         break;
 
       case 9:
         Print("You suddenly feel weaker!");
         if (c[STRENGTH]>3) c[STRENGTH]--;
-        UpdateStatus();
         break;
 
       default:
@@ -325,7 +319,6 @@ void oaltar(int ans)
         {
           Print("Nothing happens.");
         }
-        UpdateStatus();
         break;
 
       case 'i':
@@ -420,8 +413,6 @@ void oaltar_m(long k)
 			}
 
         }
-
-        UpdateStatus();
         nomove = 1;
     }
 }
@@ -547,7 +538,6 @@ void ofountain(int ans)
                  (long)x, plural(x));
          
           losehp(DIED_DRANK_POISONOUS_WATER, x);
-          UpdateStatus();
         }
         else if (x<14)
         {
@@ -560,7 +550,6 @@ void ofountain(int ans)
           Print("You now have incredible bulging muscles!");
           if (c[GIANTSTR]==0) c[STREXTRA] += PGIANTSTR_BOOST;
           c[GIANTSTR] += 700;
-          UpdateEffects();
         }
         else if (x < 45)
         {
@@ -596,7 +585,6 @@ void ofountain(int ans)
                (long)x, plural(x));
 
         losehp(DIED_DRANK_POISONOUS_WATER, x);
-        UpdateStatus();
       }
       else if (rnd(100) < 29)
       {
@@ -673,9 +661,6 @@ void ostairs(int dir, int ans)
              */
             positionplayer();
           }
-
-          draws(0, MAXX, 0, MAXY);
-          UpdateStatusAndEffects();
         }
         else
         {
@@ -717,9 +702,6 @@ void ostairs(int dir, int ans)
              */
             positionplayer();
           }
-
-          draws(0,MAXX,0,MAXY);
-          UpdateStatusAndEffects();
         }
         else
         {
@@ -800,8 +782,6 @@ void oteleport(int err)
   {
     positionplayer();
   }
-  draws(0, MAXX, 0, MAXY);
-  UpdateStatusAndEffects();
 }
 
 
@@ -848,7 +828,6 @@ void opit(void)
       losehp(DIED_FELL_INTO_PIT, i);
       nap(2000);
       newcavelevel(level + 1);
-      draws(0, MAXX, 0, MAXY);
     }
   }
 }
@@ -915,9 +894,6 @@ void oelevator(int dir)
       newcavelevel(level + rnd(VBOTTOM - level));
     }
   }
-
-  draws(0, MAXX, 0, MAXY);
-  UpdateStatusAndEffects();
 }
 
 /* =============================================================================

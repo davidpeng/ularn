@@ -1087,9 +1087,6 @@ static void genmonst(int i)
 
         /* now wipe out monsters on this level */
         newcavelevel(level);
-        draws(0, MAXX, 0, MAXY);
-        UpdateStatusAndEffects();
-
         done = 1;
       }
     }
@@ -1242,7 +1239,6 @@ static void speldamage(SpellType Spell)
           know[j][i] = item[j][i];
         }
       }
-      draws(xl, xh + 1, yl, yh + 1);
       return;
 
     case SPELL_HEL:
@@ -1594,7 +1590,6 @@ static void speldamage(SpellType Spell)
           }
         }
       }
-      draws(0, MAXX, 0, MAXY);
       if (wizard == 0) spelknow[SPELL_ALT]--;
       if (save) free((char *) save);
       positionplayer();
@@ -2028,7 +2023,6 @@ void cast(int i)
     }
 
     recalc();
-    UpdateStatusAndEffects();
 }
 
 

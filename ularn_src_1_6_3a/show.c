@@ -115,8 +115,6 @@ void qshowstr(void)
   int mobuls_left;
 
   clearpager();
-  nosignal = 1; /* don't allow ^c etc */
-
   if (c[GOLD])
   {
     Printf(".)   %d gold piece%s.",(long)c[GOLD], plural(c[GOLD]));
@@ -136,8 +134,6 @@ void qshowstr(void)
   mobuls_left = (TIMELIMIT/100) - mobuls_used;
   Printf("Elapsed time is %d.  You have %d mobul%s left.",
     mobuls_used, mobuls_left, plural(mobuls_left));
-
-  nosignal=0;
 }
 
 
@@ -168,8 +164,6 @@ void showwear(void)
   int count;
   int i;
   int j;
-
-  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   /* count number of items we will display */
@@ -229,8 +223,6 @@ void showwear(void)
       }
     }
   }
-
-  nosignal = 0;
 }
 
 /* =============================================================================
@@ -241,8 +233,6 @@ void showwield(void)
   int i;
   int j;
   int count;
-  
-  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   /* count how many items */
@@ -318,8 +308,6 @@ void showwield(void)
       }
     }
   }
-
-  nosignal = 0;
 }
 
 /* =============================================================================
@@ -330,8 +318,6 @@ void showread (void)
   int i;
   int j;
   int count;
-
-  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   count = 2;
@@ -373,8 +359,6 @@ void showread (void)
       }
     }
   }
-
-  nosignal = 0;
 }
 
 /* =============================================================================
@@ -385,8 +369,6 @@ void showeat (void)
   int i;
   int j;
   int count;
-
-  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   count = 2;
@@ -426,8 +408,6 @@ void showeat (void)
       }
     }
   }
-
-  nosignal=0;
 }
 
 /* =============================================================================
@@ -436,8 +416,6 @@ void showeat (void)
 void showquaff (void)
 {
   int i,j,count;
-
-  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   count = 2;
@@ -474,8 +452,6 @@ void showquaff (void)
       }
     }
   }
-
-  nosignal = 0;
 }
 
 /* =============================================================================

@@ -151,7 +151,6 @@ void wield (int i)
       c[WIELD] = -1;
       Print("You unwield your weapon.");
       recalc();
-      UpdateStatus();
       return;
     }
     else if ((i >= 'a') && (i <= 'z'))
@@ -191,7 +190,6 @@ void wield (int i)
         Printc('.');
 
         recalc();
-        UpdateStatus();
         return;
       }
     }
@@ -243,7 +241,6 @@ void wear (int i)
           Printc('.');
 
           recalc();
-          UpdateStatus();
           return;
 
         case OSHIELD:
@@ -261,7 +258,6 @@ void wear (int i)
           Printc('.');
 
           recalc();
-          UpdateStatus();
           return;
 
         default:
@@ -371,7 +367,6 @@ void drop_gold(long amt)
     {
         iarg[playerx][playery] = (short) i;
     }
-    UpdateStatus();
     dropflag = 1;
 }
 
@@ -779,14 +774,12 @@ void takeoff(int i)
 		c[SHIELD] = -1;
 		Print("Your shield is off.");
 		recalc();
-		UpdateStatus();
 	}
 	else if (c[WEAR] == i - 'a')
 	{
 		c[WEAR] = -1;
 		Print("Your armor is off.");
 		recalc();
-		UpdateStatus();
 	}
 }
 
@@ -795,5 +788,4 @@ void unwield()
 	c[WIELD] = -1;
 	Print("You unwield your weapon.");
 	recalc();
-	UpdateStatus();
 }

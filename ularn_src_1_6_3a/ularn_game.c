@@ -126,10 +126,6 @@ char *dirname[] =
   "East",
   "North",
   "West",
-  "Northeast",
-  "Northwest",
-  "Southeast",
-  "Southwest"
 };
 
 /* =============================================================================
@@ -333,14 +329,6 @@ void read_options(void)
               {
                 Printf("Unknown gender '%s'", tok);
               }
-              break;
-
-            case OPTION_NAP:
-              nonap = 0;
-              break;
-
-            case OPTION_NONAP:
-              nonap = 1;
               break;
 
             case OPTION_WELCOME:

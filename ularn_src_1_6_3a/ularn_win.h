@@ -9,14 +9,6 @@
  * module.
  *
  * =============================================================================
- * EXPORTED VARIABLES
- *
- * nonap         : Set to true if no time delays are to be used.
- * nosignal      : Set if ctrl-C is to be trapped to prevent exit.
- * enable_scroll : Probably superfluous
- * yrepcount     : Repeat count for input commands.
- *
- * =============================================================================
  * EXPORTED FUNCTIONS
  *
  * init_app               : Initialise the app
@@ -27,9 +19,6 @@
  * get_num_input          : Geta number
  * get_dir_input          : Get a direction
  * set_display            : Set the display mode
- * UpdateStatus           : Update the status display
- * UpdateEffects          : Update the effects display
- * UpdateStatusAndEffects : Update both status and effects display
  * ClearText              : Clear the text output area
  * UlarnBeep              : Make a beep
  * MoveCursor             : Set the cursor location
@@ -71,33 +60,6 @@ typedef enum FormatType
   FORMAT_BOLD,
   FORMAT_INVERSE,
 } FormatType;
-
-/*
- * Flag indicating if time delays are active.
- *   0 = Use delays
- *   1 = No delays
- */
-extern int nonap;
-
-/*
- * Flag to indicate if signals are to be trapped.
- */
-extern int nosignal;
-
-/* constant for enabled/disabled scrolling regn */
-extern char enable_scroll;
-
-/* Repeat count for the current command */
-extern int yrepcount;
-
-/*
- * Display modes for the main window
- */
-typedef enum DisplayModeType
-{
-  DISPLAY_MAP,     /* Map display mode for moving around dungeons */
-  DISPLAY_TEXT     /* Text display mode for scores, shops etc.    */
-} DisplayModeType;
 
 //
 // Effects types for map_effect
@@ -186,55 +148,6 @@ void close_app(void);
 /* =============================================================================
  * Status and effects display update functions
  */
-
-/* =============================================================================
- * FUNCTION: UpdateStatus
- *
- * DESCRIPTION:
- * Update the status lines showing the current player's attributes, HP, Exp
- * etc.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void UpdateStatus(void);
-
-/* =============================================================================
- * FUNCTION: UpdateEffects
- *
- * DESCRIPTION:
- * Updates the display of effects curently in play.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void UpdateEffects(void);
-
-/* =============================================================================
- * FUNCTION: UpdateStatusAndEffects
- *
- * DESCRIPTION:
- * Update status and effects display.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void UpdateStatusAndEffects(void);
 
 /* =============================================================================
  * Text routines (operates on message or text window)
@@ -331,22 +244,6 @@ void Printf(char *fmt, ...);
 void show1cell(int x, int y);
 
 /* =============================================================================
- * FUNCTION: showplayer
- *
- * DESCRIPTION:
- * Show the player on the map, scrolling the map if necessary.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void showplayer(void);
-
-/* =============================================================================
  * FUNCTION: showcell
  *
  * DESCRIPTION:
@@ -364,44 +261,6 @@ void showplayer(void);
  *   None.
  */
 void showcell(int x, int y);
-
-/* =============================================================================
- * FUNCTION: drawscreen
- *
- * DESCRIPTION:
- * Redraw the entire screen.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void drawscreen(void);
-
-/* =============================================================================
- * FUNCTION: draws
- *
- * DESCRIPTION:
- * Redraw a sub-section of the screen.
- *
- * PARAMETERS:
- *
- *   minx : The min x coordiante of the area to redraw.
- *
- *   miny : The min y coordiante of the area to redraw.
- *
- *   maxx : The max x coordiante of the area to redraw.
- *
- *   maxy : The max y coordiante of the area to redraw.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-void draws(int minx, int miny, int maxx, int maxy);
 
 /* =============================================================================
  * FUNCTION: mapeffect

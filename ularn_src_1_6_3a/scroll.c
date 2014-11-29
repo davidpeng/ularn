@@ -183,7 +183,6 @@ void read_scroll(int typ)
         }
       }
       nap(2000);
-      draws(xl, xh, yl, yh);
       return;
 
     case SBLANK:
@@ -249,17 +248,14 @@ void read_scroll(int typ)
 
     case SSPIRITPROT:
       c[SPIRITPRO] += 300 + rnd(200);
-      UpdateEffects();
       return;
 
     case SUNDEADPROT:
       c[UNDEADPRO] += 300 + rnd(200);
-      UpdateEffects();
       return;
 
     case SSTEALTH:
       c[STEALTH] += 250 + rnd(250);
-      UpdateEffects();
       return;
 
     case SMAGICMAP:
@@ -275,12 +271,10 @@ void read_scroll(int typ)
         }
       }
       nap(2000);
-      draws(0, MAXX, 0, MAXY);
       return;
 
     case SHOLDMONST:
       c[HOLDMONST] += 30;
-      UpdateEffects();
       return;
 
     case SGEMPERFECT:
@@ -390,6 +384,5 @@ void readbook(int arg)
   {
     Print("You feel clever!");
     c[INTELLIGENCE]++;
-    UpdateStatus();
   }
 }
