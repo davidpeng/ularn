@@ -51,24 +51,6 @@
 #define BUFSZ   256 /* for getlin buffers */
 #define MAX_CMDLINE_PARAM 255
 
-static char copyright[]=
-  "\nUlarn created by Phil Cordier -- based on Larn by Noah Morgan\n"
-  "  Updated by Josh Brandt and David Richerby\n"
-  "  Rewrite and Windows32/X11/Amiga graphics conversion by Julian Olds";
-
-static char cmdhelp[] = "\
-Cmd line format: Ularn [-sicnh] [-o <optsfile>] [-d #] [-r]\n\
-  -s   show the scoreboard\n\
-  -i   show scoreboard with inventories\n\
-  -c   create new scoreboard (wizard only)\n\
-  -n   suppress welcome message on starting game\n\
-  -h   print this help text\n\
-  -o <optsfile> specify .Ularnopts file to be used instead of \"~/.Ularnopts\"\n\
-  -d # specify level of difficulty (example: Ularn -d 5)\n\
-  -r   restore checkpoint (.ckp) file\n";
-
-static char *optstring = "sicnhro:d:";
-
 static short viewflag;
 
 /* =============================================================================
@@ -89,7 +71,6 @@ static short viewflag;
  *
  *   None.
  */
-//extern int scoreboardExists();
 
 int difficulty = 0;
 

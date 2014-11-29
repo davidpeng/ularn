@@ -48,13 +48,6 @@
  */
 
 /*
- * Possible answers to various selections
- */
-static char *SelectItemAns = "abcdefghijklmnopqrstuvwxyz*\033";
-static char *SelectDropAns = "abcdefghijklmnopqrstuvwxyz*.\033";
-static char *SelectWieldAns = "abcdefghijklmnopqrstuvwxyz*-\033";
-
-/*
  * Types of uses of an item
  */
 typedef enum UseType
@@ -68,18 +61,6 @@ typedef enum UseType
   USE_COUNT
 } UseType;
 
-/*
- * String for each use
- */
-static char *UseStrings[USE_COUNT] =
-{
-  "wield",
-  "quaff",
-  "read",
-  "wear",
-  "eat",
-  "drop"
-};
 
 /* =============================================================================
  * Local functions

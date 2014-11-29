@@ -29,7 +29,7 @@ static void MemoryFile_allocate(MemoryFile *file, unsigned required)
 void MemoryFile_write(MemoryFile *file, unsigned char *data, unsigned length)
 {
     MemoryFile_allocate(file, (file->current - file->start) / 2 + length + 1);
-    for (int i = 0; i < length; i++)
+    for (unsigned i = 0; i < length; i++)
     {
         *file->current++ = HEXADECIMAL_DIGITS[data[i] >> 4];
         *file->current++ = HEXADECIMAL_DIGITS[data[i] & 0x0f];
@@ -56,7 +56,7 @@ static unsigned char parse_hexadecimal(char digit)
 
 void MemoryFile_read(MemoryFile *file, unsigned char *buffer, unsigned length)
 {
-    for (int i = 0; i < length; i++)
+    for (unsigned i = 0; i < length; i++)
     {
         if (*file->current == 0)
             return;

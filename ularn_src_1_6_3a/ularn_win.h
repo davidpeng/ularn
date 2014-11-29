@@ -317,7 +317,7 @@ void magic_effect(int x, int y, MagicEffectsType fx, int frame);
  *
  *   None.
  */
-void nap(int delay);
+void nap();
 
 /* =============================================================================
  * User name functions

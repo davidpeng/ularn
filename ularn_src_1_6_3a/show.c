@@ -41,52 +41,6 @@
 #include "show.h"
 
 /* =============================================================================
- * Local variables
- */
-
-/*
- * See magic function line and position counts. Used for paginating see magic.
- */
-static int lincount;
-static int count;
-
-/* =============================================================================
- * Local functions
- */
-
-/* =============================================================================
- * FUNCTION: seepage
- *
- * DESCRIPTION:
- * This function is used to paginate the seemagic output.
- * It is called for each spell displayed and assumes that spells are displayed
- * in 3 columns.
- * Whenever the number of calls indicates a full page has been displayed it
- * calls more() to prompt for the next page.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-static void seepage(void)
-{
-  if (++count == 3)
-  {
-    lincount++;
-    count = 0;
-
-    if (lincount > 17)
-    {
-      lincount = 0;
-    }
-  }
-}
-
-/* =============================================================================
  * Exported functions
  */
 

@@ -562,10 +562,6 @@ void showcell(int x, int y)
   int minx, maxx;
   int miny, maxy;
   int mx, my;
-  int sx, sy;
-  int TileX, TileY;
-  int TileId;
-  int scroll;
 
   /*
    * Decide how much the player knows about around him/her.
@@ -707,7 +703,7 @@ char *get_map_effect_json()
 /* =============================================================================
  * FUNCTION: nap
  */
-void nap(int delay)
+void nap()
 {
   if (map_effect_json[0] != 0 && map_effect_json[strlen(map_effect_json) - 1] != '[')
     strcat(map_effect_json, "],[");

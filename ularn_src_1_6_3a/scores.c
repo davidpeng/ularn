@@ -60,12 +60,6 @@ struct score_header_type
   int  Format;
 };
 
-static struct score_header_type CurrentHeader =
-{
-  { 'u', 'l', 's', 'b' },
-  SCORE_VERSION
-};
-
 /* This is the structure for the scoreboard   */
 struct score_type
 {

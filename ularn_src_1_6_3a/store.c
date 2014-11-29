@@ -383,28 +383,6 @@ static void dnd_2hed(void)
 }
 
 /* =============================================================================
- * FUNCTION: dnd_hed
- *
- * DESCRIPTION:
- * Function to display a page of the DnD Store items.
- * The list of items displayed starts at dnditem.
- *
- * PARAMETERS:
- *
- *   None.
- *
- * RETURN VALUE:
- *
- *   None.
- */
-static void dnd_hed(void)
-{
-  int i;
-
-  for (i=dnditm; i<IVENSIZE+dnditm; i++) dnditem(i);
-}
-
-/* =============================================================================
  * Exported functions
  */
 
@@ -906,7 +884,6 @@ void appraise3(int ans)
  */
 static void obanksub()
 {
-  long amt;
   int i,k, eye=0;
 
   ointerest();  /* credit any needed interest */
@@ -1334,10 +1311,6 @@ void add_tradepost_options()
 
 void otradepost()
 {
-  int no_sell_flag;  /* set to true if the selected item can't be sold */
-  int idx;           /* inventory index of the item to sell            */
-  int it, itarg;     /* item number and argument of the item to sell   */
-  long value;        /* value of the item in gold                      */
   dnditm = 0;
   otradhead();
 
@@ -1642,8 +1615,6 @@ static void nocash(void)
  */
 static void pad_hd(void)
 {
-  int Dope;
-
   print_header("Hey man, welcome to Dealer McDope's Pad!  I gots the some of the finest dope ");
   print_header("you'll find anywhere in Ularn -- check it out... ");
 }
