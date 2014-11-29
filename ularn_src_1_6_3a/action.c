@@ -130,30 +130,6 @@ static void ycwi (int x)
  */
 
 /* =============================================================================
- * FUNCTION: run
- */
-void run (int dir)
-{
-  int i;
-  i=1;
-
-  while (i)
-  {
-    i = moveplayer(dir);
-    if (i>0)
-    {
-      if (c[HASTEMONST]) movemonst();
-
-      movemonst();
-      randmonst();
-      regen();
-    }
-    if (hitflag) i=0;
-    if (i!=0) showcell(playerx,playery);
-  }
-}
-
-/* =============================================================================
  * FUNCTION: wield
  */
 void wield (int i)

@@ -205,32 +205,16 @@ void parse (ActionType Action)
       moveplayer(4);
       return;
 
-    case ACTION_RUN_WEST:
-      run(4);
-      return;
-
     case ACTION_MOVE_EAST:
      moveplayer(2);
      return;
-
-    case ACTION_RUN_EAST:
-      run(2);
-      return;
 
     case ACTION_MOVE_SOUTH:
       moveplayer(1);
       return;
 
-    case ACTION_RUN_SOUTH:
-      run(1);
-      return;
-
     case ACTION_MOVE_NORTH:
       moveplayer(3);
-      return;
-
-    case ACTION_RUN_NORTH:
-      run(3);
       return;
 
     case ACTION_WAIT:
