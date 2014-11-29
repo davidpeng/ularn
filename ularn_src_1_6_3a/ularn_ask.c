@@ -67,7 +67,7 @@ void pager(void)
 int dirsub(int *x, int *y, ActionType ans)
 {
   int d;
-  ActionType dir_order[9];
+  ActionType dir_order[5];
 
   /*
    * Direction keys. Order must match diroff
@@ -77,11 +77,7 @@ int dirsub(int *x, int *y, ActionType ans)
   dir_order[1] = ACTION_MOVE_EAST;
   dir_order[2] = ACTION_MOVE_NORTH;
   dir_order[3] = ACTION_MOVE_WEST;
-  dir_order[4] = ACTION_MOVE_NORTHEAST;
-  dir_order[5] = ACTION_MOVE_NORTHWEST;
-  dir_order[6] = ACTION_MOVE_SOUTHEAST;
-  dir_order[7] = ACTION_MOVE_SOUTHWEST;
-  dir_order[8] = 0;
+  dir_order[4] = 0;
 
   d = 0;
   while (dir_order[d] != ans) d++;

@@ -115,9 +115,9 @@ char dropflag = 0;   /* if 1 then don't lookforobject() next round */
 char restorflag = 0; /* 1 means restore has been done */
 char enhance_interface = 0; /* 1 means use the enhanced command interface */
 
-char diroffx[] = { 0,  0, 1,  0, -1,  1, -1, 1, -1 };
-char diroffy[] = { 0,  1, 0, -1,  0, -1, -1, 1,  1 };
-int  ReverseDir[] = { 0, 3, 4, 1, 2, 8, 7, 6, 5 };
+char diroffx[] = { 0,  0, 1,  0, -1 };
+char diroffy[] = { 0,  1, 0, -1,  0 };
+int  ReverseDir[] = { 0, 3, 4, 1, 2 };
 
 char *dirname[] =
 {

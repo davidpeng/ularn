@@ -1512,12 +1512,12 @@ void createitem(int x, int y, int it, int arg)
     return;   /* no such object */
 
   /* Select the initial direction to try at random */
-  dir = rnd(8);
+  dir = rnd(4);
 
-  for (dir_try = 0 ; dir_try < 8; dir_try++)
+  for (dir_try = 0 ; dir_try < 4; dir_try++)
   {
     /* choose direction, try all */
-    if (dir > 8) dir = 1; /* wraparound the diroff arrays */
+    if (dir > 4) dir = 1; /* wraparound the diroff arrays */
 
     ox = x + diroffx[dir];
     oy = y + diroffy[dir];

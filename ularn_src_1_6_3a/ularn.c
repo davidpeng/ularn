@@ -233,38 +233,6 @@ void parse (ActionType Action)
       run(3);
       return;
 
-    case ACTION_MOVE_NORTHEAST:
-      moveplayer(5);
-      return;
-
-    case ACTION_RUN_NORTHEAST:
-      run(5);
-      return;
-
-    case ACTION_MOVE_NORTHWEST:
-      moveplayer(6);
-      return;
-
-    case ACTION_RUN_NORTHWEST:
-      run(6);
-      return;
-
-    case ACTION_MOVE_SOUTHEAST:
-      moveplayer(7);
-      return;
-
-    case ACTION_RUN_SOUTHEAST:
-      run(7);
-      return;
-
-    case ACTION_MOVE_SOUTHWEST:
-      moveplayer(8);
-      return;
-
-    case ACTION_RUN_SOUTHWEST:
-      run(8);
-      return;
-
     case ACTION_WAIT:
       if (yrepcount) viewflag=1;
       return;

@@ -111,72 +111,14 @@ struct KeyCodeType
   int ModKey;
 };
 
-#define NUM_DIRS 8
+#define NUM_DIRS 4
 static ActionType DirActions[NUM_DIRS] =
 {
   ACTION_MOVE_WEST,
   ACTION_MOVE_EAST,
   ACTION_MOVE_SOUTH,
-  ACTION_MOVE_NORTH,
-  ACTION_MOVE_NORTHEAST,
-  ACTION_MOVE_NORTHWEST,
-  ACTION_MOVE_SOUTHEAST,
-  ACTION_MOVE_SOUTHWEST
+  ACTION_MOVE_NORTH
 };
-
-/* Default keymap */
-/* Allow up to MAX_KEY_BINDINGS per action */
-static struct KeyCodeType KeyMap[ACTION_COUNT][MAX_KEY_BINDINGS] =
-{
-  { { 0, 0 },         { 0, 0 }, { 0, 0 } },                           // ACTION_NULL
-  { { '~', M_ASCII }, { 0, 0 }, { 0, 0 } },                           // ACTION_DIAG
-  { { 'h', M_ASCII }, { 100, M_NONE }, { 37, M_NONE } },              // ACTION_MOVE_WEST
-  { { 'H', M_ASCII }, { 37, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_WEST
-  { { 'l', M_ASCII }, { 102, M_NONE }, { 39, M_NONE } },              // ACTION_MOVE_EAST,
-  { { 'L', M_ASCII }, { 39, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_EAST,
-  { { 'j', M_ASCII }, { 98, M_NONE },  { 40, M_NONE } },              // ACTION_MOVE_SOUTH,
-  { { 'J', M_ASCII }, { 40, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_SOUTH,
-  { { 'k', M_ASCII }, { 104, M_NONE }, { 38, M_NONE } },              // ACTION_MOVE_NORTH,
-  { { 'K', M_ASCII }, { 38, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_NORTH,
-  { { 'u', M_ASCII }, { 105, M_NONE }, { 33, M_NONE } },              // ACTION_MOVE_NORTHEAST,
-  { { 'U', M_ASCII }, { 33, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_NORTHEAST,
-  { { 'y', M_ASCII }, { 103, M_NONE }, { 36, M_NONE } },              // ACTION_MOVE_NORTHWEST,
-  { { 'Y', M_ASCII }, { 36, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_NORTHWEST,
-  { { 'n', M_ASCII }, { 99, M_NONE },  { 34, M_NONE } },              // ACTION_MOVE_SOUTHEAST,
-  { { 'N', M_ASCII }, { 34, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_SOUTHEAST,
-  { { 'b', M_ASCII }, { 97, M_NONE },  { 35, M_NONE } },              // ACTION_MOVE_SOUTHWEST,
-  { { 'B', M_ASCII }, { 35, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_SOUTHWEST,
-  { { '.', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_WAIT,
-  { { ' ', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_NONE,
-  { { 'w', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_WIELD,
-  { { 'W', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_WEAR,
-  { { 'r', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_READ,
-  { { 'q', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_QUAFF,
-  { { 'd', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_DROP,
-  { { 'c', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_CAST_SPELL,
-  { { 'o', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_OPEN_DOOR,
-  { { 'C', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_CLOSE_DOOR,
-  { { 'O', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_OPEN_CHEST,
-  { { 'i', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_INVENTORY,
-  { { 'e', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_EAT_COOKIE,
-  { { '\\',M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_LIST_SPELLS,
-  { { '?', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_HELP,
-  { { 'S', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_SAVE,
-  { { 'Z', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_TELEPORT,
-  { { '^', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_IDENTIFY_TRAPS,
-  { { '_', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_BECOME_CREATOR,
-  { { '+', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_CREATE_ITEM,
-  { { '-', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_TOGGLE_WIZARD,
-  { { '`', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_DEBUG_MODE,
-  { { 'T', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_REMOVE_ARMOUR,
-  { { 'g', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_PACK_WEIGHT,
-  { { 'v', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_VERSION,
-  { { 'Q', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_QUIT,
-  { { 'R', M_CTRL  }, { 0, 0 }, { 0, 0 } },                   // ACTION_REDRAW_SCREEN,
-  { { 'P', M_ASCII }, { 0, 0 }, { 0, 0 } }                    // ACTION_SHOW_TAX
-};
-
-static struct KeyCodeType RunKeyMap = { 101, M_NONE };
 
 //
 // Variables for windows

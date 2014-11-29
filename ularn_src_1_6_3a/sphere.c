@@ -200,7 +200,7 @@ int msphere(struct sphere *sp, int create)
   }
 
   /* no movement if direction not found */
-  if (sp->dir >= 9) sp->dir = 0;
+  if (sp->dir >= 5) sp->dir = 0;
 
   x = sp->x;
   y = sp->y;
@@ -512,7 +512,7 @@ void movsphere(void)
         if (rnd((int) max(7, c[INTELLIGENCE]>>1)) <= 2)
         {
           /* sphere changes direction */
-          sp->dir = (short) rnd(8);
+          sp->dir = (short) rnd(4);
         }
 
         msphere(sp, 0);

@@ -2,11 +2,11 @@ ACTION_MOVE_WEST = 2;
 ACTION_MOVE_EAST = 4;
 ACTION_MOVE_SOUTH = 6;
 ACTION_MOVE_NORTH = 8;
-ACTION_WAIT = 18;
-ACTION_CAST_SPELL = 25;
-ACTION_LIST_SPELLS = 31;
-ACTION_TELEPORT = 34;
-ACTION_IDENTIFY_TRAPS = 35;
+ACTION_WAIT = 10;
+ACTION_CAST_SPELL = 17;
+ACTION_LIST_SPELLS = 23;
+ACTION_TELEPORT = 26;
+ACTION_IDENTIFY_TRAPS = 28;
 
 TILE_WIDTH = 32;
 TILE_HEIGHT = 32;
@@ -639,20 +639,20 @@ function handleMouseDown(repeatDelay) {
     handleAction(ACTION_WAIT);
   } else {
     var angle = Math.atan2(y, x) * 180 / Math.PI + 180;
-    var direction = Math.floor((angle - ANGLES_PER_DIRECTION / 2) /
+    var direction = Math.floor((angle + ANGLES_PER_DIRECTION / 2) /
         ANGLES_PER_DIRECTION) % NUMBER_OF_DIRECTIONS;
     switch (direction) {
       case 0:
-        handleAction(ACTION_MOVE_NORTH);
+        handleAction(ACTION_MOVE_WEST);
         break;
       case 1:
-        handleAction(ACTION_MOVE_EAST);
+        handleAction(ACTION_MOVE_NORTH);
         break;
       case 2:
-        handleAction(ACTION_MOVE_SOUTH);
+        handleAction(ACTION_MOVE_EAST);
         break;
       case 3:
-        handleAction(ACTION_MOVE_WEST);
+        handleAction(ACTION_MOVE_SOUTH);
         break;
     }
   }

@@ -593,7 +593,7 @@ int moveplayer(int dir)
   {
     if (c[LEVEL]<rnd(30))
     {
-      dir = rund(9); /*if confused any dir*/
+      dir = rund(5); /*if confused any dir*/
     }
   }
 
