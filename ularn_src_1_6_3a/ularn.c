@@ -24,8 +24,6 @@
 #include <string.h>
 #include <emscripten.h>
 
-#include "patchlevel.h"
-
 #include "ularn_game.h"
 #include "ularn_win.h"
 #include "ularn_ask.h"
@@ -242,21 +240,9 @@ void parse (ActionType Action)
       openchest();
       return;
 
-    case ACTION_INVENTORY:
-      yrepcount=0;
-      nomove=1;
-      showstr();
-      return;
-
     case ACTION_LIST_SPELLS:
       yrepcount=0;
       seemagic(0);
-      nomove=1;
-      return;
-
-    case ACTION_HELP:
-      yrepcount=0;
-      help();
       nomove=1;
       return;
 
@@ -316,30 +302,6 @@ void parse (ActionType Action)
       }
       if (flag==0)
         Print("No traps are visible.");
-      return;
-
-    case ACTION_BECOME_CREATOR:
-      yrepcount=0;
-      nomove=1;
-
-      raiseexperience(370 * 1000000);
-
-      recalc();
-      UpdateStatus();
-      drawscreen();
-      return;
-
-    case ACTION_TOGGLE_WIZARD:
-      yrepcount=0;
-      nomove=1;
-      if (wizard)
-      {
-        Print("You are no longer a wizard.");
-        wizard = 0;
-        return;
-      }
-      Print("You are now a wizard.");
-      wizard = 1;
       return;
 
     case ACTION_DEBUG_MODE:
@@ -456,44 +418,6 @@ void parse (ActionType Action)
         {
           Print("You aren't wearing anything.");
         }
-      }
-      return;
-
-    case ACTION_PACK_WEIGHT:
-      Printf("The stuff you are carrying presently weighs %d pound%s.",
-              (long) packweight(),
-              plural(packweight()));
-      nomove=1;
-      yrepcount=0;
-      return;
-
-    case ACTION_VERSION:
-      yrepcount=0;
-      Printf("The Addiction of Ularn -- Version %s.%s (%s)\nDifficulty level %d",
-              LARN_VERSION,
-              LARN_PATCHLEVEL,
-              LARN_DATE,
-              (long)c[HARDGAME]);
-      if (wizard) Print(" (WIZARD)");
-      nomove=1;
-      if (cheat) Print(" (Cheater)");
-      Print(copyright);
-      return;
-
-    case ACTION_REDRAW_SCREEN:
-      yrepcount=0;
-      drawscreen();
-      nomove=1;
-      return;
-
-    case ACTION_SHOW_TAX:
-      if (outstanding_taxes>0)
-      {
-        Printf("You presently owe %d gp in taxes.", (long)outstanding_taxes);
-      }
-      else
-      {
-        Print("You do not owe any taxes.");
       }
       return;
 
