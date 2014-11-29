@@ -142,7 +142,6 @@ typedef enum MagicEffectsType
 typedef enum ActionType
 {
   ACTION_NULL,
-  ACTION_DIAG,
   ACTION_MOVE_WEST,
   ACTION_MOVE_EAST,
   ACTION_MOVE_SOUTH,

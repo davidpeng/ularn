@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 emcc \
   action.c \
-  diag.c \
   dungeon.c \
   dungeon_obj.c \
   fortune.c \

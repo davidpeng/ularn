@@ -44,7 +44,6 @@
 #include "spell.h"
 #include "show.h"
 #include "help.h"
-#include "diag.h"
 #include "itm.h"
 
 /* =============================================================================
@@ -193,14 +192,6 @@ void parse (ActionType Action)
 
   switch (Action)
   {
-    case ACTION_DIAG:
-      if (wizard)
-      {
-        diag();
-      }
-      yrepcount = 0;
-      return;
-
     case ACTION_MOVE_WEST:
       moveplayer(4);
       return;
