@@ -21,8 +21,6 @@
 #ifndef __HEADER_H
 #define __HEADER_H
 
-#include "config.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -40,14 +38,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#ifdef UNIX
 #include <unistd.h>
-#endif
-
-#ifdef WINDOWS
-#include <io.h>
-#endif
 
 /*
  *  ------------------- macros --------------------

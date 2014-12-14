@@ -71,7 +71,7 @@ char ckpflag = 1; /* 1 if want checkpointing of game, 0 otherwise */
 char nobeep  = 0; /* true if program is not to beep*/
 
 
-char libdir[MAXPATHLEN] = LIBDIR;
+char libdir[MAXPATHLEN] = "lib";
 
 char savedir[MAXPATHLEN];
 

@@ -51,7 +51,6 @@
 #include "header.h"
 #include "ularn_game.h"
 
-#include "config.h"
 #include "dungeon.h"
 #include "player.h"
 #include "ularn_win.h"

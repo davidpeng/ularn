@@ -46,8 +46,6 @@
 #ifndef __ULARN_WIN_H
 #define __ULARN_WIN_H
 
-#include "config.h"
-
 /*
  * Text formats
  */
