@@ -35,7 +35,6 @@
 #include "dungeon.h"
 #include "player.h"
 #include "monster.h"
-#include "action.h"
 #include "object.h"
 #include "potion.h"
 #include "scroll.h"
@@ -208,10 +207,6 @@ void parse (ActionType Action)
       }
 	  else
 		Print("You don't know any spells.");
-      return;
-
-    case ACTION_OPEN_CHEST:
-      openchest();
       return;
 
     case ACTION_LIST_SPELLS:
