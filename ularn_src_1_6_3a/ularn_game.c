@@ -71,7 +71,7 @@ char ckpflag = 1; /* 1 if want checkpointing of game, 0 otherwise */
 char nobeep  = 0; /* true if program is not to beep*/
 
 
-char libdir[MAXPATHLEN] = "lib";
+char libdir[MAXPATHLEN] = LIBDIR;
 
 char savedir[MAXPATHLEN];
 
@@ -115,9 +115,9 @@ char dropflag = 0;   /* if 1 then don't lookforobject() next round */
 char restorflag = 0; /* 1 means restore has been done */
 char enhance_interface = 0; /* 1 means use the enhanced command interface */
 
-char diroffx[] = { 0,  0, 1,  0, -1 };
-char diroffy[] = { 0,  1, 0, -1,  0 };
-int  ReverseDir[] = { 0, 3, 4, 1, 2 };
+char diroffx[] = { 0,  0, 1,  0, -1,  1, -1, 1, -1 };
+char diroffy[] = { 0,  1, 0, -1,  0, -1, -1, 1,  1 };
+int  ReverseDir[] = { 0, 3, 4, 1, 2, 8, 7, 6, 5 };
 
 char *dirname[] =
 {
@@ -126,6 +126,10 @@ char *dirname[] =
   "East",
   "North",
   "West",
+  "Northeast",
+  "Northwest",
+  "Southeast",
+  "Southwest"
 };
 
 /* =============================================================================
@@ -329,6 +333,14 @@ void read_options(void)
               {
                 Printf("Unknown gender '%s'", tok);
               }
+              break;
+
+            case OPTION_NAP:
+              nonap = 0;
+              break;
+
+            case OPTION_NONAP:
+              nonap = 1;
               break;
 
             case OPTION_WELCOME:

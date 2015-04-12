@@ -99,6 +99,39 @@ static void fsorry(void)
   nap(4000);
 }
 
+
+/* =============================================================================
+ * FUNCTION: fcheat
+ *
+ * DESCRIPTION:
+ * Subroutine to not allow game if save file can't be deleted.
+ * Displays a message and quits the game.
+ *
+ * PARAMETERS:
+ *
+ *   None
+ *
+ * RETURN VALUE:
+ *
+ *   None.
+ */
+static void fcheat(void)
+{
+  if (wizard)
+    return;
+  if (cheat)
+    return;
+
+  Print("Sorry but your savefile can't be deleted.  This can only mean");
+  Print("that you tried to CHEAT by protecting the directory the savefile");
+  Print("is in.  Since this is unfair to the rest of the Ularn community, I");
+  Print("cannot let you play this game.");
+  nap(5000);
+  c[GOLD] = c[BANKACCOUNT] = 0;
+  died(DIED_PROTECTED_SAVE_FILE, 0);
+  return;
+}
+
 /* =============================================================================
  * Exported functions
  */
@@ -109,6 +142,9 @@ static void fsorry(void)
 MemoryFile *savegame()
 {
   MemoryFile *fp;
+
+  nosignal = 1;
+
   /* Save the current level to storage */
   savelevel();
 
@@ -130,6 +166,9 @@ MemoryFile *savegame()
 
   /* file sum */
   bwrite(fp, (char *) &FileSum, sizeof(FileSum));
+
+  nosignal = 0;
+
   return fp;
 }
 

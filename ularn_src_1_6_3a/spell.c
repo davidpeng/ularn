@@ -336,6 +336,8 @@ static char *spelmes[] = {
   /* 18 */  "the %s loves fire and lightning!"
 };
 
+static char eys[] = "Enter your spell [D for list, ESC to abort]: ";
+
 /* used for alter reality spell */
 struct isave
 {
@@ -1085,6 +1087,9 @@ static void genmonst(int i)
 
         /* now wipe out monsters on this level */
         newcavelevel(level);
+        draws(0, MAXX, 0, MAXY);
+        UpdateStatusAndEffects();
+
         done = 1;
       }
     }
@@ -1133,6 +1138,7 @@ static void speldamage(SpellType Spell)
   int  i, j, clev;
   int xl, yl;
   int xh, yh;
+  char *s;
 
   /* no such spell */
   if (Spell >= SPELL_COUNT) return;
@@ -1151,7 +1157,7 @@ static void speldamage(SpellType Spell)
   }
 
   clev = c[LEVEL];
-  if ((clev * 3 + 2) < (int)Spell)
+  if ((clev * 3 + 2) < Spell)
   {
     Print("Nothing happens.  You seem inexperienced.");
     return;
@@ -1236,6 +1242,7 @@ static void speldamage(SpellType Spell)
           know[j][i] = item[j][i];
         }
       }
+      draws(xl, xh + 1, yl, yh + 1);
       return;
 
     case SPELL_HEL:
@@ -1587,6 +1594,7 @@ static void speldamage(SpellType Spell)
           }
         }
       }
+      draws(0, MAXX, 0, MAXY);
       if (wizard == 0) spelknow[SPELL_ALT]--;
       if (save) free((char *) save);
       positionplayer();
@@ -2020,6 +2028,7 @@ void cast(int i)
     }
 
     recalc();
+    UpdateStatusAndEffects();
 }
 
 

@@ -231,6 +231,7 @@ static void checkloss(int x)
   if (x > 0)
   {
     losehp(DIED_MONSTER, x);
+    UpdateStatus();
   }
 }
 
@@ -708,6 +709,7 @@ static int spattack(int x, int xx, int yy)
     Printf(p, lastmonst);
 
     recalc();
+    UpdateStatus();
   }
 
   return (need_show);
@@ -1172,7 +1174,7 @@ static void smart_move(int x, int y)
            * This square is path_dist steps from the player, so advance
            * the path by one in all directions not already part of a path.
            */
-          for (z = 1 ; z < 5 ; z++)
+          for (z = 1 ; z < 9 ; z++)
           {
             xtmp = sx + diroffx[z];
             ytmp = sy + diroffy[z];
@@ -1212,7 +1214,7 @@ static void smart_move(int x, int y)
      */
     path_dist = screen[x][y] - 1;
 
-    for (z = 1 ; z < 5 ; z++)
+    for (z = 1 ; z < 9 ; z++)
     {
       xl = x + diroffx[z];
       yl = y + diroffy[z];
@@ -1306,8 +1308,7 @@ static void dumb_move(int x, int y)
   {
     for (ty = yl ; ty < yh ; ty++)
     {
-      if ((tx == x || ty == y) &&
-          valid_monst_move(tx, ty, monst_id) &&
+      if (valid_monst_move(tx, ty, monst_id) &&
           (mitem[tx][ty].mon == MONST_NONE))
       {
         w1[tmp] = (short) ((playerx - tx)*(playerx - tx) +
@@ -1364,16 +1365,11 @@ static void scared_move(int x, int y)
   if (ny < 0) ny = 0;
   if (ny >= MAXY) ny = MAXY-1;
 
-  if (nx != x && valid_monst_move(nx, y, mitem[x][y].mon) &&
-      (mitem[nx][y].mon == MONST_NONE))
+  if (valid_monst_move(nx, ny, mitem[x][y].mon) &&
+      (mitem[nx][ny].mon == MONST_NONE))
   {
     /* This is a valid place to move, so move there */
-    mmove(x, y, nx, y);
-  }
-  else if (valid_monst_move(x, ny, mitem[x][y].mon) &&
-      (mitem[x][ny].mon == MONST_NONE))
-  {
-    mmove(x, y, x, ny);
+    mmove(x, y, nx, ny);
   }
 
   return;
@@ -1482,9 +1478,9 @@ void createmonster(MonsterIdType mon)
   }
 
   /* choose direction, then try all */
-  for (k = rnd(4), i = -4; i < 0; i++, k++)
+  for (k = rnd(8), i = -8; i < 0; i++, k++)
   {
-    if (k > 4) k = 1; /* wraparound the diroff arrays */
+    if (k > 8) k = 1; /* wraparound the diroff arrays */
     x = playerx + diroffx[k];
     y = playery + diroffy[k];
 
@@ -1657,6 +1653,7 @@ void hitmonster(int x, int y)
 
     /* Recalculate WC */
     recalc();
+    UpdateStatus();
   }
 
   if (flag)
@@ -1795,6 +1792,7 @@ int hitm(int x, int y, int amt, int SpellFlag)
     show1cell(x,y);
     showcell(playerx,playery);
     recalc();
+    UpdateStatus();
     hitp[x][y] = 0;
 
     return (hpoints);
@@ -1826,6 +1824,8 @@ void hitplayer (int x, int y)
 
   bias = (c[HARDGAME]) + 1;
   hitflag = hit2flag = hit3flag = 1;
+  yrepcount=0;
+
   ifblind(x,y);
 
   if (mster==LEMMING)
@@ -1931,6 +1931,7 @@ void hitplayer (int x, int y)
     if (dam > 0)
     {
       losehp(DIED_MONSTER, dam);
+      UpdateStatus();
     }
   }
 

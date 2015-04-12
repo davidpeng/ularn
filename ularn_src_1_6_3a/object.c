@@ -239,6 +239,8 @@ void ogold(int arg)
 
   Printf("You find %d gold piece%s.", i, plural(i));
   c[GOLD] += i;
+  UpdateStatus();
+
   /* destroy gold */
   item[playerx][playery] = ONOTHING;
 }
@@ -360,6 +362,8 @@ void oopenchest(void)
 
     Printf("You suffer %d hit point%s damage!", (long)i, plural(i));
     losehp(DIED_EXPLODING_CHEST, i);
+    UpdateStatus();
+
     switch (rnd(10))
     {
       case 1:
@@ -419,6 +423,8 @@ void lookforobject(void)
   if (i == ONOTHING) return;
 
   showcell(playerx,playery);
+  yrepcount=0;
+
   switch (i)
   {
     case OGOLDPILE:
@@ -648,6 +654,7 @@ void lookforobject(void)
       UlarnBeep(); /* for an arrow trap */
 
       losehp(DIED_SHOT_BY_ARROW, rnd(10)+level);
+      UpdateStatus();
       return;
 
     case OIVDARTRAP:
@@ -659,6 +666,7 @@ void lookforobject(void)
       
       losehp(DIED_HIT_BY_DART, rnd(5));
       if ((--c[STRENGTH]) < 3) c[STRENGTH] = 3;
+      UpdateStatus();
       return;
 
     case OIVTRAPDOOR:
@@ -685,6 +693,8 @@ void lookforobject(void)
       losehp(DIED_FELL_THROUGH_TRAPDOOR, rnd(5+level));
       nap(2000);
       newcavelevel(level+1);
+      draws(0,MAXX,0,MAXY);
+      UpdateStatusAndEffects();
       return;
 
     case OTRADEPOST:
@@ -787,6 +797,8 @@ void act_on_object(int ans)
   if (i == ONOTHING) return;
 
   showcell(playerx,playery);
+  yrepcount=0;
+
   switch (i)
   {
     case OPOTION:
@@ -872,6 +884,8 @@ void act_on_object(int ans)
           forget();
           c[LAMP]=0;  /* chance of finding lamp again */
         }
+
+        UpdateStatus();
       }
       else if (ans=='t')
       {
@@ -978,6 +992,9 @@ void act_on_object(int ans)
         /* Make sure the entrance to the dungeon is clear */
         item[33][MAXY-1] = ONOTHING;
         mitem[33][MAXY-1].mon = MONST_NONE;
+
+        draws(0,MAXX,0,MAXY);
+        UpdateStatusAndEffects();
         return;
       }
       break;
@@ -998,12 +1015,15 @@ void act_on_object(int ans)
         UlarnBeep();
         
         losehp(DIED_SLIPPED_VOLCANO_SHAFT, 30+rnd(20));
+        UpdateStatus();
       }
       nap(3000);
       newcavelevel(DBOTTOM+1); /* down to V1 */
       playerx = (char) rnd(MAXX-2);
       playery = (char) rnd(MAXY-2);
       positionplayer();
+      draws(0,MAXX,0,MAXY);
+      UpdateStatusAndEffects();
       return;
 
     case OVOLUP:
@@ -1017,6 +1037,7 @@ void act_on_object(int ans)
         UlarnBeep();
         
         losehp(DIED_SLIPPED_VOLCANO_SHAFT, 15+rnd(20));
+        UpdateStatus();
         return;
       }
 
@@ -1034,6 +1055,8 @@ void act_on_object(int ans)
           positionplayer();
         }
       }
+      draws(0,MAXX,0,MAXY);
+      UpdateStatusAndEffects();
       return;
 
     case OTRADEPOST:
@@ -1069,6 +1092,7 @@ void act_on_object(int ans)
         adjust_ability(DEXTERITY, -2);
         adjust_ability(STRENGTH, -2);
         forget();
+        UpdateStatus();
       }
       else if (ans=='t')
       {
@@ -1085,6 +1109,7 @@ void act_on_object(int ans)
         adjust_ability(WISDOM, 2);
         adjust_ability(CHARISMA, 2);
         forget();
+        UpdateStatus();
       }
       else if (ans=='t')
       {
@@ -1115,6 +1140,7 @@ void act_on_object(int ans)
           }
         }
         forget();
+        UpdateStatus();
       }
       else if (ans=='t')
       {
@@ -1134,6 +1160,7 @@ void act_on_object(int ans)
         c[HALFDAM] += 300+rnd(200);
         c[CLUMSINESS] += rnd(1800)+200;
         forget();
+        UpdateStatus();
       }
       else if (ans=='t')
       {
@@ -1155,6 +1182,7 @@ void act_on_object(int ans)
         }
         c[COKED] += 10;
         forget();
+        UpdateStatus();
       }
       else if (ans=='t')
       {
@@ -1203,5 +1231,6 @@ void obrasslamp(int i)
 	forget();
 
 	recalc();
+	UpdateStatus();
 }
 

@@ -75,7 +75,7 @@ extern char nobeep;   /* true if program is not to beep*/
 
 
 /* maximum number moves before the game is called*/
-#define TIMELIMIT 50000
+#define TIMELIMIT 40000
 
 /* create a checkpoint file every CKCOUNT moves */
 #define CKCOUNT 400

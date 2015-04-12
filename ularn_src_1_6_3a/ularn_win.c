@@ -11,6 +11,14 @@
  * This is the Windows 32 window display and input module.
  *
  * =============================================================================
+ * EXPORTED VARIABLES
+ *
+ * nonap         : Set to true if no time delays are to be used.
+ * nosignal      : Set if ctrl-C is to be trapped to prevent exit.
+ * enable_scroll : Probably superfluous
+ * yrepcount     : Repeat count for input commands.
+ *
+ * =============================================================================
  * EXPORTED FUNCTIONS
  *
  * init_app               : Initialise the app
@@ -21,6 +29,9 @@
  * get_num_input          : Geta number
  * get_dir_input          : Get a direction
  * set_display            : Set the display mode
+ * UpdateStatus           : Update the status display
+ * UpdateEffects          : Update the effects display
+ * UpdateStatusAndEffects : Update both status and effects display
  * ClearText              : Clear the text output area
  * UlarnBeep              : Make a beep
  * Cursor                 : Set the cursor location
@@ -51,6 +62,7 @@
 #include "header.h"
 #include "ularn_game.h"
 
+#include "config.h"
 #include "dungeon.h"
 #include "player.h"
 #include "ularn_win.h"
@@ -59,14 +71,161 @@
 #include "show.h"
 #include "savegame.h"
 
+//
+// Defines for windows
+//
+#define WINDOW_CLASS_NAME "ULARN_WINCLASS"  // class name
+
+// Default size of the ularn window in characters
+#define WINDOW_WIDTH    80
+#define WINDOW_HEIGHT   25
+#define SEPARATOR_WIDTH   8
+#define SEPARATOR_HEIGHT  8
+#define BORDER_SIZE       8
+
+/* =============================================================================
+ * Exported variables
+ */
+
+int nonap = 0;
+int nosignal = 0;
+
+char enable_scroll = 0;
+
+int yrepcount = 0;
+
 /* =============================================================================
  * Local variables
  */
 
+#define M_NONE 0
+#define M_SHIFT 1
+#define M_CTRL  2
+#define M_ASCII 255
+
+#define MAX_KEY_BINDINGS 3
+
+struct KeyCodeType
+{
+  int VirtKey;
+  int ModKey;
+};
+
+#define NUM_DIRS 8
+static ActionType DirActions[NUM_DIRS] =
+{
+  ACTION_MOVE_WEST,
+  ACTION_MOVE_EAST,
+  ACTION_MOVE_SOUTH,
+  ACTION_MOVE_NORTH,
+  ACTION_MOVE_NORTHEAST,
+  ACTION_MOVE_NORTHWEST,
+  ACTION_MOVE_SOUTHEAST,
+  ACTION_MOVE_SOUTHWEST
+};
+
+/* Default keymap */
+/* Allow up to MAX_KEY_BINDINGS per action */
+static struct KeyCodeType KeyMap[ACTION_COUNT][MAX_KEY_BINDINGS] =
+{
+  { { 0, 0 },         { 0, 0 }, { 0, 0 } },                           // ACTION_NULL
+  { { '~', M_ASCII }, { 0, 0 }, { 0, 0 } },                           // ACTION_DIAG
+  { { 'h', M_ASCII }, { 100, M_NONE }, { 37, M_NONE } },              // ACTION_MOVE_WEST
+  { { 'H', M_ASCII }, { 37, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_WEST
+  { { 'l', M_ASCII }, { 102, M_NONE }, { 39, M_NONE } },              // ACTION_MOVE_EAST,
+  { { 'L', M_ASCII }, { 39, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_EAST,
+  { { 'j', M_ASCII }, { 98, M_NONE },  { 40, M_NONE } },              // ACTION_MOVE_SOUTH,
+  { { 'J', M_ASCII }, { 40, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_SOUTH,
+  { { 'k', M_ASCII }, { 104, M_NONE }, { 38, M_NONE } },              // ACTION_MOVE_NORTH,
+  { { 'K', M_ASCII }, { 38, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_NORTH,
+  { { 'u', M_ASCII }, { 105, M_NONE }, { 33, M_NONE } },              // ACTION_MOVE_NORTHEAST,
+  { { 'U', M_ASCII }, { 33, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_NORTHEAST,
+  { { 'y', M_ASCII }, { 103, M_NONE }, { 36, M_NONE } },              // ACTION_MOVE_NORTHWEST,
+  { { 'Y', M_ASCII }, { 36, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_NORTHWEST,
+  { { 'n', M_ASCII }, { 99, M_NONE },  { 34, M_NONE } },              // ACTION_MOVE_SOUTHEAST,
+  { { 'N', M_ASCII }, { 34, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_SOUTHEAST,
+  { { 'b', M_ASCII }, { 97, M_NONE },  { 35, M_NONE } },              // ACTION_MOVE_SOUTHWEST,
+  { { 'B', M_ASCII }, { 35, M_SHIFT }, { 0, 0 } },                    // ACTION_RUN_SOUTHWEST,
+  { { '.', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_WAIT,
+  { { ' ', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_NONE,
+  { { 'w', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_WIELD,
+  { { 'W', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_WEAR,
+  { { 'r', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_READ,
+  { { 'q', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_QUAFF,
+  { { 'd', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_DROP,
+  { { 'c', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_CAST_SPELL,
+  { { 'o', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_OPEN_DOOR,
+  { { 'C', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_CLOSE_DOOR,
+  { { 'O', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_OPEN_CHEST,
+  { { 'i', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_INVENTORY,
+  { { 'e', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_EAT_COOKIE,
+  { { '\\',M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_LIST_SPELLS,
+  { { '?', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_HELP,
+  { { 'S', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_SAVE,
+  { { 'Z', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_TELEPORT,
+  { { '^', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_IDENTIFY_TRAPS,
+  { { '_', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_BECOME_CREATOR,
+  { { '+', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_CREATE_ITEM,
+  { { '-', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_TOGGLE_WIZARD,
+  { { '`', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_DEBUG_MODE,
+  { { 'T', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_REMOVE_ARMOUR,
+  { { 'g', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_PACK_WEIGHT,
+  { { 'v', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_VERSION,
+  { { 'Q', M_ASCII }, { 0, 0 }, { 0, 0 } },                   // ACTION_QUIT,
+  { { 'R', M_CTRL  }, { 0, 0 }, { 0, 0 } },                   // ACTION_REDRAW_SCREEN,
+  { { 'P', M_ASCII }, { 0, 0 }, { 0, 0 } }                    // ACTION_SHOW_TAX
+};
+
+static struct KeyCodeType RunKeyMap = { 101, M_NONE };
+
+//
+// Variables for windows
+//
+
+#define INITIAL_WIDTH 400
+#define INITIAL_HEIGHT 300
+
+static int use_palette = 0;
+static int peused[256];
+
+static int CaretActive = 0;
+
+static int TileWidth = 32;
+static int TileHeight = 32;
+static int CharHeight;
+static int CharWidth;
+static int LarnWindowLeft = 0;
+static int LarnWindowTop  = 0;
+static int LarnWindowWidth = INITIAL_WIDTH;
+static int LarnWindowHeight = INITIAL_HEIGHT;
+static int LarnWindowMaximized = 0;
+static int MinWindowWidth;
+static int MinWindowHeight;
+
+static int Runkey;
+static ActionType Event;
+static int GotChar;
+static char EventChar;
 static int beep;
 static char json_buffer[8000];
 static char map_effect_json[8000] = "";
 
+//
+// player id file
+//
+static char *PIDName = LIBDIR "\\ularn.pid";
+#define FIRST_PID 1001
+
+//
+// ularn.ini file for window position & font selection
+//
+static char *IniName = "ularn.ini";
+
+//
+// Bitmaps for tiles
+//
+
+static char *TileBMName = LIBDIR "\\ularn_gfx.bmp";
 
 /* Tiles for different character classes, (female, male) */
 static int PlayerTiles[8][2] =
@@ -227,6 +386,42 @@ static struct MagicEffectDataType magicfx_tile[MAGIC_COUNT] =
   }
 };
 
+//
+// Map window position and size
+//
+static int MapLeft;
+static int MapTop;
+static int MapWidth;
+static int MapHeight;
+
+static int MapTileLeft = 0;
+static int MapTileTop  = 0;
+static int MapTileWidth;
+static int MapTileHeight;
+
+//
+// Status lines window position and size
+//
+static int StatusLeft;
+static int StatusTop;
+static int StatusWidth;
+static int StatusHeight;
+
+//
+// Effects window position and size
+//
+static int EffectsLeft;
+static int EffectsTop;
+static int EffectsWidth;
+static int EffectsHeight;
+
+//
+// Message window position and size
+//
+static int MessageLeft;
+static int MessageTop;
+static int MessageWidth;
+static int MessageHeight;
 
 //
 // Messages
@@ -245,6 +440,10 @@ static MonsterIdType mimicmonst = MIMIC;
 /*
  * Repaint flag to force redraw of everything, not just deltas
  */
+static int Repaint = 0;
+
+static int status_updated = 0;
+static int effects_updated = 0;
 
 char *get_status_json()
 {
@@ -261,6 +460,7 @@ char *get_status_json()
 	for (int i = 0; i < 100; i++)
 		cbak[i] = c[i];
 
+	status_updated = 0;
 	return json_buffer;
 }
 
@@ -335,6 +535,7 @@ char *get_effects_json()
 		strcat(json_buffer, "\"");
 	}
 
+	effects_updated = 0;
 	strcat(json_buffer, "]");
 	return json_buffer;
 }
@@ -469,6 +670,30 @@ char *get_text_html()
  * Exported functions
  */
 
+/* =============================================================================
+ * FUNCTION: UpdateStatus
+ */
+void UpdateStatus(void)
+{
+	status_updated = 1;
+}
+
+/* =============================================================================
+ * FUNCTION: UpdateEffects
+ */
+void UpdateEffects(void)
+{
+	effects_updated = 1;
+}
+
+/* =============================================================================
+ * FUNCTION: UpdateStatusAndEffects
+ */
+void UpdateStatusAndEffects(void)
+{
+	status_updated = 1;
+	effects_updated = 1;
+}
 
 /* =============================================================================
  * FUNCTION: UlarnBeep
@@ -554,6 +779,13 @@ void show1cell(int x, int y)
 }
 
 /* =============================================================================
+ * FUNCTION: showplayer
+ */
+void showplayer(void)
+{
+}
+
+/* =============================================================================
  * FUNCTION: showcell
  */
 void showcell(int x, int y)
@@ -561,6 +793,10 @@ void showcell(int x, int y)
   int minx, maxx;
   int miny, maxy;
   int mx, my;
+  int sx, sy;
+  int TileX, TileY;
+  int TileId;
+  int scroll;
 
   /*
    * Decide how much the player knows about around him/her.
@@ -622,6 +858,20 @@ void showcell(int x, int y)
 
     }
   }
+}
+
+/* =============================================================================
+ * FUNCTION: drawscreen
+ */
+void drawscreen(void)
+{
+}
+
+/* =============================================================================
+ * FUNCTION: draws
+ */
+void draws(int minx, int miny, int maxx, int maxy)
+{
 }
 
 /* =============================================================================
@@ -702,7 +952,7 @@ char *get_map_effect_json()
 /* =============================================================================
  * FUNCTION: nap
  */
-void nap()
+void nap(int delay)
 {
   if (map_effect_json[0] != 0 && map_effect_json[strlen(map_effect_json) - 1] != '[')
     strcat(map_effect_json, "],[");
@@ -711,6 +961,8 @@ void nap()
 //
 //
 //
+
+static char *UserName;
 
 static char input_type[20] = "";
 static char callback[20] = "";

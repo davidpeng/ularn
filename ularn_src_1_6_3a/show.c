@@ -41,6 +41,52 @@
 #include "show.h"
 
 /* =============================================================================
+ * Local variables
+ */
+
+/*
+ * See magic function line and position counts. Used for paginating see magic.
+ */
+static int lincount;
+static int count;
+
+/* =============================================================================
+ * Local functions
+ */
+
+/* =============================================================================
+ * FUNCTION: seepage
+ *
+ * DESCRIPTION:
+ * This function is used to paginate the seemagic output.
+ * It is called for each spell displayed and assumes that spells are displayed
+ * in 3 columns.
+ * Whenever the number of calls indicates a full page has been displayed it
+ * calls more() to prompt for the next page.
+ *
+ * PARAMETERS:
+ *
+ *   None.
+ *
+ * RETURN VALUE:
+ *
+ *   None.
+ */
+static void seepage(void)
+{
+  if (++count == 3)
+  {
+    lincount++;
+    count = 0;
+
+    if (lincount > 17)
+    {
+      lincount = 0;
+    }
+  }
+}
+
+/* =============================================================================
  * Exported functions
  */
 
@@ -69,6 +115,8 @@ void qshowstr(void)
   int mobuls_left;
 
   clearpager();
+  nosignal = 1; /* don't allow ^c etc */
+
   if (c[GOLD])
   {
     Printf(".)   %d gold piece%s.",(long)c[GOLD], plural(c[GOLD]));
@@ -88,6 +136,8 @@ void qshowstr(void)
   mobuls_left = (TIMELIMIT/100) - mobuls_used;
   Printf("Elapsed time is %d.  You have %d mobul%s left.",
     mobuls_used, mobuls_left, plural(mobuls_left));
+
+  nosignal=0;
 }
 
 
@@ -118,6 +168,8 @@ void showwear(void)
   int count;
   int i;
   int j;
+
+  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   /* count number of items we will display */
@@ -177,6 +229,8 @@ void showwear(void)
       }
     }
   }
+
+  nosignal = 0;
 }
 
 /* =============================================================================
@@ -187,6 +241,8 @@ void showwield(void)
   int i;
   int j;
   int count;
+  
+  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   /* count how many items */
@@ -262,6 +318,8 @@ void showwield(void)
       }
     }
   }
+
+  nosignal = 0;
 }
 
 /* =============================================================================
@@ -272,6 +330,8 @@ void showread (void)
   int i;
   int j;
   int count;
+
+  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   count = 2;
@@ -313,6 +373,8 @@ void showread (void)
       }
     }
   }
+
+  nosignal = 0;
 }
 
 /* =============================================================================
@@ -323,6 +385,8 @@ void showeat (void)
   int i;
   int j;
   int count;
+
+  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   count = 2;
@@ -362,6 +426,8 @@ void showeat (void)
       }
     }
   }
+
+  nosignal=0;
 }
 
 /* =============================================================================
@@ -370,6 +436,8 @@ void showeat (void)
 void showquaff (void)
 {
   int i,j,count;
+
+  nosignal = 1; /* don't allow ^c etc */
   clearpager();
 
   count = 2;
@@ -406,6 +474,8 @@ void showquaff (void)
       }
     }
   }
+
+  nosignal = 0;
 }
 
 /* =============================================================================

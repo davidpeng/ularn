@@ -24,6 +24,8 @@
 #include <string.h>
 #include <emscripten.h>
 
+#include "patchlevel.h"
+
 #include "ularn_game.h"
 #include "ularn_win.h"
 #include "ularn_ask.h"
@@ -35,12 +37,14 @@
 #include "dungeon.h"
 #include "player.h"
 #include "monster.h"
+#include "action.h"
 #include "object.h"
 #include "potion.h"
 #include "scroll.h"
 #include "spell.h"
 #include "show.h"
 #include "help.h"
+#include "diag.h"
 #include "itm.h"
 
 /* =============================================================================
@@ -49,6 +53,24 @@
 
 #define BUFSZ   256 /* for getlin buffers */
 #define MAX_CMDLINE_PARAM 255
+
+static char copyright[]=
+  "\nUlarn created by Phil Cordier -- based on Larn by Noah Morgan\n"
+  "  Updated by Josh Brandt and David Richerby\n"
+  "  Rewrite and Windows32/X11/Amiga graphics conversion by Julian Olds";
+
+static char cmdhelp[] = "\
+Cmd line format: Ularn [-sicnh] [-o <optsfile>] [-d #] [-r]\n\
+  -s   show the scoreboard\n\
+  -i   show scoreboard with inventories\n\
+  -c   create new scoreboard (wizard only)\n\
+  -n   suppress welcome message on starting game\n\
+  -h   print this help text\n\
+  -o <optsfile> specify .Ularnopts file to be used instead of \"~/.Ularnopts\"\n\
+  -d # specify level of difficulty (example: Ularn -d 5)\n\
+  -r   restore checkpoint (.ckp) file\n";
+
+static char *optstring = "sicnhro:d:";
 
 static short viewflag;
 
@@ -70,6 +92,7 @@ static short viewflag;
  *
  *   None.
  */
+//extern int scoreboardExists();
 
 int difficulty = 0;
 
@@ -139,6 +162,9 @@ void ULarnSetup(char character_class)
   /* set up the desired difficulty  */
   sethard(difficulty);
 
+  showplayer();
+
+  yrepcount = 0;
   hit2flag = 0;
 
   EM_ASM(
@@ -167,30 +193,89 @@ void parse (ActionType Action)
 
   switch (Action)
   {
+    case ACTION_DIAG:
+      if (wizard)
+      {
+        diag();
+      }
+      yrepcount = 0;
+      return;
+
     case ACTION_MOVE_WEST:
       moveplayer(4);
+      return;
+
+    case ACTION_RUN_WEST:
+      run(4);
       return;
 
     case ACTION_MOVE_EAST:
      moveplayer(2);
      return;
 
+    case ACTION_RUN_EAST:
+      run(2);
+      return;
+
     case ACTION_MOVE_SOUTH:
       moveplayer(1);
+      return;
+
+    case ACTION_RUN_SOUTH:
+      run(1);
       return;
 
     case ACTION_MOVE_NORTH:
       moveplayer(3);
       return;
 
+    case ACTION_RUN_NORTH:
+      run(3);
+      return;
+
+    case ACTION_MOVE_NORTHEAST:
+      moveplayer(5);
+      return;
+
+    case ACTION_RUN_NORTHEAST:
+      run(5);
+      return;
+
+    case ACTION_MOVE_NORTHWEST:
+      moveplayer(6);
+      return;
+
+    case ACTION_RUN_NORTHWEST:
+      run(6);
+      return;
+
+    case ACTION_MOVE_SOUTHEAST:
+      moveplayer(7);
+      return;
+
+    case ACTION_RUN_SOUTHEAST:
+      run(7);
+      return;
+
+    case ACTION_MOVE_SOUTHWEST:
+      moveplayer(8);
+      return;
+
+    case ACTION_RUN_SOUTHWEST:
+      run(8);
+      return;
+
     case ACTION_WAIT:
+      if (yrepcount) viewflag=1;
       return;
 
     case ACTION_NONE:
+      yrepcount = 0;
       nomove = 1;
       return;
 
     case ACTION_CAST_SPELL:
+      yrepcount=0;
   	  j = 0;
 	  for (i = 0; i < SPELL_COUNT; i++)
 	  {
@@ -209,8 +294,26 @@ void parse (ActionType Action)
 		Print("You don't know any spells.");
       return;
 
+    case ACTION_OPEN_CHEST:
+      yrepcount=0;
+      openchest();
+      return;
+
+    case ACTION_INVENTORY:
+      yrepcount=0;
+      nomove=1;
+      showstr();
+      return;
+
     case ACTION_LIST_SPELLS:
+      yrepcount=0;
       seemagic(0);
+      nomove=1;
+      return;
+
+    case ACTION_HELP:
+      yrepcount=0;
+      help();
       nomove=1;
       return;
 
@@ -226,6 +329,7 @@ void parse (ActionType Action)
       return;
 
     case ACTION_TELEPORT:
+      yrepcount=0;
       if (wizard)
       {
 		set_input_type("number");
@@ -243,6 +347,8 @@ void parse (ActionType Action)
 
     case ACTION_IDENTIFY_TRAPS:
       flag=0;
+      yrepcount=0;
+
       for (j=playery-1; j<playery+2; j++)
       {
         if (j < 0) j=0;
@@ -269,7 +375,32 @@ void parse (ActionType Action)
         Print("No traps are visible.");
       return;
 
+    case ACTION_BECOME_CREATOR:
+      yrepcount=0;
+      nomove=1;
+
+      raiseexperience(370 * 1000000);
+
+      recalc();
+      UpdateStatus();
+      drawscreen();
+      return;
+
+    case ACTION_TOGGLE_WIZARD:
+      yrepcount=0;
+      nomove=1;
+      if (wizard)
+      {
+        Print("You are no longer a wizard.");
+        wizard = 0;
+        return;
+      }
+      Print("You are now a wizard.");
+      wizard = 1;
+      return;
+
     case ACTION_DEBUG_MODE:
+      yrepcount=0;
       nomove=1;
       if (!wizard)
       {
@@ -355,14 +486,19 @@ void parse (ActionType Action)
       c[GOLD] += 250000;
 
       recalc();
+      UpdateStatus();
+      drawscreen();
       return;
 
     case ACTION_REMOVE_ARMOUR:
+      yrepcount=0;
+
       if (c[SHIELD] != -1)
       {
         c[SHIELD] = -1;
         Print("Your shield is off.");
         recalc();
+        UpdateStatus();
       }
       else
       {
@@ -371,11 +507,50 @@ void parse (ActionType Action)
           c[WEAR] = -1;
           Print("Your armor is off.");
           recalc();
+          UpdateStatus();
         }
         else
         {
           Print("You aren't wearing anything.");
         }
+      }
+      return;
+
+    case ACTION_PACK_WEIGHT:
+      Printf("The stuff you are carrying presently weighs %d pound%s.",
+              (long) packweight(),
+              plural(packweight()));
+      nomove=1;
+      yrepcount=0;
+      return;
+
+    case ACTION_VERSION:
+      yrepcount=0;
+      Printf("The Addiction of Ularn -- Version %s.%s (%s)\nDifficulty level %d",
+              LARN_VERSION,
+              LARN_PATCHLEVEL,
+              LARN_DATE,
+              (long)c[HARDGAME]);
+      if (wizard) Print(" (WIZARD)");
+      nomove=1;
+      if (cheat) Print(" (Cheater)");
+      Print(copyright);
+      return;
+
+    case ACTION_REDRAW_SCREEN:
+      yrepcount=0;
+      drawscreen();
+      nomove=1;
+      return;
+
+    case ACTION_SHOW_TAX:
+      if (outstanding_taxes>0)
+      {
+        Printf("You presently owe %d gp in taxes.", (long)outstanding_taxes);
+      }
+      else
+      {
+        Print("You do not owe any taxes.");
       }
       return;
 
@@ -397,6 +572,8 @@ void action_teleport(int t)
     playery = (char) rnd(MAXY-2);
     newcavelevel(t);
     positionplayer();
+    draws(0, MAXX, 0, MAXY);
+    UpdateStatusAndEffects();
 }
 
 void move_world(int check_for_object)

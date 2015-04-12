@@ -228,6 +228,7 @@ void quaffpotion(int pot)
           }
         }
       }
+      showplayer();
       return;
 
     case PMONSTDET:
@@ -254,6 +255,7 @@ void quaffpotion(int pot)
         }
       }
       nap(2000);
+      draws(0, MAXX, 0, MAXY);
       return;
 
     case PWATER:
@@ -264,6 +266,7 @@ void quaffpotion(int pot)
       c[BLINDCOUNT]+=250;  /* dang, that's a long time. */
       /* erase the character, too! */
 
+      showplayer();
       return;
 
     case PCONFUSION:
@@ -315,6 +318,7 @@ void quaffpotion(int pot)
           }
         }
       }
+      showplayer();
       return;
 
     case PINSTHEAL:
@@ -342,5 +346,6 @@ void quaffpotion(int pot)
   }
 
   /*  show new stats    */
+  UpdateStatusAndEffects();
   return;
 }
