@@ -1,3 +1,8 @@
+// Fix potential XSS vulnerability in jQuery.
+jQuery.htmlPrefilter = function(html) {
+  return html;
+};
+
 ACTION_MOVE_WEST = 2;
 ACTION_MOVE_EAST = 4;
 ACTION_MOVE_SOUTH = 6;
@@ -40,22 +45,22 @@ $(function () {
     if (location.search.indexOf('ffos') == -1) {
         FastClick.attach(document.body);
     }
-    
+
     $canvas = $('canvas');
     $messages = $('#messages');
     $overlay = $('#overlay');
     $popup = $('#popup');
     $showGridlinesCheckbox = $('#showGridlinesCheckbox');
-    
+
     canvas = $canvas[0];
-    canvasContext = canvas.getContext('2d');    
+    canvasContext = canvas.getContext('2d');
     canvasContext.imageSmoothingEnabled = false;
     canvasContext.webkitImageSmoothingEnabled = false;
     canvasContext.mozImageSmoothingEnabled = false;
-    
+
     graphics = $('#graphics')[0];
     $(window).resize();
-    
+
     $('canvas, #messages').on('touchstart', function (event) {
         event.preventDefault();
         if (runningMapEffect) {
@@ -78,14 +83,14 @@ $(function () {
         mouseX = event.pageX;
         mouseY = event.pageY;
     });
-    
+
     $(document).on('touchend mouseup', clearMouseDownTimeoutId);
-    
+
     $(document).keydown(function (event) {
         if (runningMapEffect || $overlay.is(':visible')) {
             return;
         }
-        
+
         switch (event.which) {
             case 97:
                 handleAction(ACTION_MOVE_SOUTHWEST);
@@ -122,25 +127,25 @@ $(function () {
                 return;
         }
     });
-    
+
     $(document).keypress(function (event) {
         if (runningMapEffect || $popup.is(':visible')) {
             return;
         }
-        
+
         $('.contextAction').each(function () {
             if (String.fromCharCode($(this).data('code')) == String.fromCharCode(event.which).toLowerCase()) {
                 $(this).click();
             }
         });
     });
-    
+
     $('#newGameButton').click(function () {
         _set_difficulty(parseInt($('#difficultySelect').val()));
         _prompt_gender();
         refreshAll();
     });
-    
+
     $('#continueGameButton').click(function () {
         hidePopup();
         _ULarnSetup(0);
@@ -148,65 +153,65 @@ $(function () {
         $('#difficultySelect').val(_get_difficulty());
         refreshAll();
     });
-    
+
     $('#settingsButton').click(function () {
         showPopup('settings');
     });
-    
+
     $('#aboutButton').click(function () {
         showPopup('about');
     });
-    
+
     $('#aboutBackButton').click(function () {
         showPopup('title');
     });
-    
+
     $('#statusButton').click(function () {
         refreshStatus();
         showPopup('status');
     });
-    
+
     $('#inventoryButton').click(showInventory);
-    
+
     $('#castButton').click(function () {
         doAction(ACTION_CAST_SPELL);
     });
-    
+
     $('#teleportOption').click(function (event) {
         event.preventDefault();
         doAction(ACTION_TELEPORT);
     });
-    
+
     $('#identifyTrapsOption').click(function (event) {
         event.preventDefault();
         doAction(ACTION_IDENTIFY_TRAPS);
     });
-    
+
     $('#showDiscoveriesOption').click(function (event) {
         event.preventDefault();
         doAction(ACTION_LIST_SPELLS);
         refreshAll();
     });
-    
+
     $('#saveGameOption').click(function (event) {
         event.preventDefault();
         saveGame();
     });
-    
+
     $('#settingsOption').click(function (event) {
         event.preventDefault();
         showPopup('settings');
     });
-    
+
     $('#difficultySelect').change(function () {
         saveSettings();
     });
-    
+
     $showGridlinesCheckbox.change(function () {
         saveSettings();
         refreshCanvas();
     });
-    
+
     $('#settingsBackButton').click(function () {
         if ($canvas.is(':visible')) {
             hidePopup();
@@ -214,32 +219,32 @@ $(function () {
             showPopup('title');
         }
     });
-    
+
     $('.backButton').click(hidePopup);
-    
+
     $('#numberInput input').keydown(function () {
         $('#numberInput .inputError').hide();
     });
-    
+
     $('#numberInput form').submit(function (event) {
         event.preventDefault();
-        
+
         var number = $('#numberInput input').val().trim();
         if (!number.match(/^\d+$/)) {
             $('#numberInput .inputError').show();
             return;
         }
-        
+
         $('#numberInput .inputError').hide();
         hidePopup();
         runCallback($('#numberInput').data('callback'), parseInt(number));
     });
-    
+
     $('#startOverButton').click(function () {
         $messages.empty();
         showTitle();
     });
-    
+
     loadSettings();
     showTitle();
 });
@@ -253,20 +258,20 @@ $(window).resize(function () {
     if (canvasHeight % 2 != 0) {
         canvasHeight--;
     }
-    
+
     var backingStorePixelRatio = canvasContext.webkitBackingStorePixelRatio ||
                                  canvasContext.mozBackingStorePixelRatio ||
                                  canvasContext.msBackingStorePixelRatio ||
                                  canvasContext.oBackingStorePixelRatio ||
                                  canvasContext.backingStorePixelRatio ||
                                  1;
-    
+
     var canvasPixelRatio = devicePixelRatio / backingStorePixelRatio;
     canvas.width = canvasWidth * canvasPixelRatio;
     canvas.height = canvasHeight * canvasPixelRatio;
     canvas.style.width = canvasWidth + 'px';
     canvas.style.height = canvasHeight + 'px';
-    
+
     $('#popupContent').css('max-height', (canvasHeight - $('#topBar').height() - $('#bottomBar').height() - 50) + 'px');
     refreshCanvas();
 });
@@ -276,7 +281,7 @@ function refreshCanvas(map) {
         map = getMap();
         previousMap = map;
     }
-    
+
     var xOffset = (canvas.width - TILE_WIDTH) / 2 - _get_player_x() * TILE_WIDTH;
     var yOffset = (canvas.height - TILE_HEIGHT) / 2 - _get_player_y() * TILE_HEIGHT;
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -289,7 +294,7 @@ function refreshCanvas(map) {
             }
         }
     }
-    
+
     drawGridlines();
 }
 
@@ -314,7 +319,7 @@ function drawGridlines() {
     if (!$showGridlinesCheckbox.is(':checked')) {
         return;
     }
-    
+
     var cellSize = canvas.width < canvas.height ? canvas.width / 3 : canvas.height / 3;
     canvasContext.strokeStyle = 'white';
     canvasContext.beginPath();
@@ -351,10 +356,10 @@ function runMapEffects(effects) {
     if (effects == null) {
         effects = JSON.parse(Pointer_stringify(_get_map_effect_json()));
     }
-    
+
     var playerX = _get_player_x();
     var playerY = _get_player_y();
-    
+
     if (effects.length == 0) {
         runningMapEffect = false;
         if (_get_game_time() >= nextAutoSaveTime) {
@@ -368,7 +373,7 @@ function runMapEffects(effects) {
         refreshScore();
         return;
     }
-    
+
     runningMapEffect = true;
     refreshCanvas(previousMap);
     var map = getMap();
@@ -381,7 +386,7 @@ function runMapEffects(effects) {
             previousMap[effect.x][effect.y] = map[effect.x][effect.y];
         }
     }
-    
+
     setTimeout(function () {
         runMapEffects(effects.slice(1));
     }, 75);
